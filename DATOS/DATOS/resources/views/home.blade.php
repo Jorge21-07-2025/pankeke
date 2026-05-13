@@ -41,7 +41,7 @@
                     @endif
 
                     <h2>Crear Cuenta</h2>
-                    <h3>us tu correo para registrarte</h3>
+                    <h3>usa tu correo para registrarte</h3>
                     
                     <div class="password-wrapper">
                         <input type="text" placeholder="Nombre" name="name" required />
