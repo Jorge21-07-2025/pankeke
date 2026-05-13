@@ -146,27 +146,27 @@
     },
     {
       "id": 7,
-      "name": "Luna",
+      "name": "Toby",
       "species": "Perro",
       "breed": "Labrador",
       "age": 2,
       "ageUnit": "años",
-      "gender": "Hembra",
+      "gender": "Macho",
       "city": "Sabaneta",
-      "weight": "5 kg",
-      "size": "Mediano",
-      "shelter": "Refugio Michis",
+      "weight": "22 kg",
+      "size": "Grande",
+      "shelter": "La Perla",
       "status": "Disponible",
       "traits": [
-        { "icon": "✓", "label": "Vacunada", "value": true },
-        { "icon": "✂️", "label": "Castrada", "value": true },
+        { "icon": "✓", "label": "Vacunado", "value": true },
+        { "icon": "✂️", "label": "Castrado", "value": true },
         { "icon": "😊", "label": "Sociable", "value": true },
-        { "icon": "🎓", "label": "Entrenada", "value": false }
+        { "icon": "🎓", "label": "Entrenado", "value": true }
       ],
-      "description": "Bella es una gata de pelo largo muy dulce y cariñosa. Le encanta recibir mimos y es perfecta para una familia que busca una compañera amorosa.",
-      "image": "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?w=400&h=400&fit=crop",
-      "emoji": "😺",
-      "color": "#a794d4"
+      "description": "Toby es un perro labrador muy energético y juguetón. Le encanta correr, jugar a buscar la pelota y nadar. Es ideal para una familia activa que disfrute del aire libre.",
+      "image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop",
+      "emoji": "🦮",
+      "color": "#fdcb6e"
     }
   ]
 }
