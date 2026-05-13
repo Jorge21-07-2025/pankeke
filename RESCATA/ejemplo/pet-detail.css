@@ -1,0 +1,368 @@
+/* ========================================
+   PET DETAIL PAGE STYLES
+   ======================================== */
+
+body {
+  background: var(--bg-cream);
+  padding-bottom: 80px;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--text-medium);
+}
+
+.loading-spinner {
+  font-size: 18px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.main-content {
+  animation: fadeIn 0.4s ease;
+}
+
+/* Pet Header with Image */
+.pet-header {
+  position: relative;
+  background: linear-gradient(135deg, var(--secondary-green-dark), var(--secondary-green));
+  height: 50vh;
+  min-height: 350px;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  overflow: hidden;
+}
+
+.header-actions {
+  position: absolute;
+  top: var(--spacing-md);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--spacing-md);
+  z-index: 10;
+}
+
+.btn-back,
+.btn-favorite {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover,
+.btn-favorite:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-back .icon {
+  color: var(--text-dark);
+  font-weight: bold;
+}
+
+.btn-favorite .icon {
+  color: var(--text-medium);
+  font-size: 24px;
+}
+
+.btn-favorite.active .icon {
+  color: var(--primary-orange);
+}
+
+.pet-image-wrapper {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  background: white;
+}
+
+/* Pet Details Section */
+.pet-details {
+  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+.pet-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+}
+
+.pet-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.pet-basic-info {
+  font-size: 14px;
+  color: var(--text-medium);
+  margin: 0;
+}
+
+/* Traits */
+.traits-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.trait-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.trait-badge.active {
+  background: var(--bg-white);
+  border: 2px solid var(--secondary-green-light);
+  color: var(--secondary-green-dark);
+}
+
+.trait-badge.inactive {
+  opacity: 0.5;
+}
+
+.trait-icon {
+  font-size: 16px;
+}
+
+/* Info Cards */
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.info-card {
+  background: var(--bg-white);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: var(--spacing-xs);
+}
+
+.info-label {
+  font-size: 12px;
+  color: var(--text-medium);
+  font-weight: 600;
+}
+
+/* Description */
+.description-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: var(--spacing-md);
+}
+
+.description-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-medium);
+}
+
+/* Adopt Button */
+.btn-adopt {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-light));
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-adopt:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-adopt:active {
+  transform: translateY(0);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-white);
+  border-top: 1px solid var(--bg-light);
+  display: flex;
+  justify-content: space-around;
+  padding: var(--spacing-sm) var(--spacing-sm) calc(var(--spacing-sm) + env(safe-area-inset-bottom));
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: var(--spacing-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-light);
+}
+
+.nav-item:hover {
+  transform: translateY(-2px);
+}
+
+.nav-item.active {
+  color: var(--primary-orange);
+}
+
+.nav-icon {
+  font-size: 22px;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pet-header {
+    height: 45vh;
+    min-height: 300px;
+  }
+
+  .pet-image-wrapper {
+    width: 240px;
+    height: 240px;
+  }
+
+  .pet-details {
+    padding: var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
+  }
+
+  .pet-name {
+    font-size: 24px;
+  }
+
+  .traits-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .pet-header {
+    height: 40vh;
+    min-height: 280px;
+  }
+
+  .pet-image-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+
+  .info-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .info-card {
+    padding: var(--spacing-sm);
+  }
+
+  .info-value {
+    font-size: 14px;
+  }
+
+  .info-label {
+    font-size: 11px;
+  }
+
+  .trait-badge {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+@media (min-width: 769px) {
+  .pet-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: var(--radius-xl);
+  }
+
+  .pet-image-wrapper {
+    width: 320px;
+    height: 320px;
+  }
+
+  .bottom-nav {
+    max-width: 1200px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+}

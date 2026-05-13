@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detalles - Adopción de Mascotas</title>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="pet-detail.css">
+  <link rel="icon" href="assets/logo_sin_fon.png" type="image/png">
+
+</head>
+<body>
+  <!-- Loading State -->
+  <div id="loadingState" class="loading-state">
+    <div class="loading-spinner">Cargando...</div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="mainContent" class="main-content" style="display: none;">
+    <!-- Header with Image -->
+    <header class="pet-header">
+      <div class="header-actions">
+        <button class="btn-back" onclick="goBack()">
+          <span class="icon">←</span>
+        </button>
+        <button class="btn-favorite" id="favoriteBtn">
+          <span class="icon">♡</span>
+        </button>
+      </div>
+      <div class="pet-image-wrapper">
+        <img id="petImage" src="" alt="Pet" class="pet-image" />
+      </div>
+    </header>
+
+    <!-- Pet Details -->
+    <main class="pet-details">
+      <!-- Name and Status -->
+      <div class="pet-header-info">
+        <div>
+          <h1 class="pet-name" id="petName">Max</h1>
+          <p class="pet-basic-info" id="petBasicInfo">Mestizo · 2 años · Macho · Medellín</p>
+        </div>
+        <span class="badge badge-success" id="petStatus">En adopción</span>
+      </div>
+
+      <!-- Traits -->
+      <div class="traits-container" id="traitsContainer">
+        <!-- Traits will be loaded dynamically -->
+      </div>
+
+      <!-- Info Cards -->
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="info-value" id="petWeight">15 kg</div>
+          <div class="info-label">Peso</div>
+        </div>
+        <div class="info-card">
+          <div class="info-value" id="petSize">Mediano</div>
+          <div class="info-label">Tamaño</div>
+        </div>
+        <div class="info-card">
+          <div class="info-value" id="petShelter">La Perla</div>
+          <div class="info-label">Refugio</div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="description-section">
+        <h2 class="section-title">Acerca de mí</h2>
+        <p class="description-text" id="petDescription">
+          Información sobre la mascota...
+        </p>
+      </div>
+
+      <!-- Adopt Button -->
+      <button class="btn-adopt" id="adoptBtn">
+        🐾 Quiero adoptarlo
+      </button>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item" onclick="window.location.href='home.html'">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Inicio</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">🔍</span>
+        <span class="nav-label">Explorar</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">📢</span>
+        <span class="nav-label">Reportar</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">❤️</span>
+        <span class="nav-label">Guardados</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="pet-detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inicio - Adopción de Mascotas</title>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="home.css">
+  <link rel="icon" href="assets/logo_sin_fon.png" type="image/png">
+
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="greeting">
+        <span class="greeting-text">Hola, buenas tardes 👋</span>
+        <h1 class="user-name" id="userName">Usuario</h1>
+      </div>
+      <div class="profile-avatar">
+        <span class="avatar-emoji">😊</span>
+      </div>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="search-container">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Buscar perros en adopción...">
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <h2 class="section-title">Impacto del programa</h2>
+      <div class="stats-grid">
+        <div class="stat-card stat-rescued">
+          <div class="stat-number">247</div>
+          <div class="stat-label">🐾 Rescatados<br>este año</div>
+        </div>
+        <div class="stat-card stat-adopted">
+          <div class="stat-number">183</div>
+          <div class="stat-label">🏠 Adoptados</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Available Pets Section -->
+    <section class="pets-section">
+      <h2 class="section-title">Disponibles para adopción</h2>
+      <div class="pets-grid" id="petsGrid">
+        <!-- Loading state -->
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-medium);">
+          Cargando mascotas disponibles...
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Inicio</span>
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Explorar</span>
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">📢</span>
+      <span class="nav-label">Reportar</span>
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">❤️</span>
+      <span class="nav-label">Guardados</span>
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Perfil</span>
+    </button>
+  </nav>
+
+  <script src="home.js"></script>
+</body>
+</html>

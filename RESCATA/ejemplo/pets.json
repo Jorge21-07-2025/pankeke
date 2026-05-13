@@ -1,0 +1,172 @@
+{
+  "pets": [
+    {
+      "id": 1,
+      "name": "Max",
+      "species": "Perro",
+      "breed": "Mestizo",
+      "age": 2,
+      "ageUnit": "años",
+      "gender": "Macho",
+      "city": "Medellín",
+      "weight": "15 kg",
+      "size": "Mediano",
+      "shelter": "La Perla",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunado", "value": true },
+        { "icon": "✂️", "label": "Castrado", "value": true },
+        { "icon": "😊", "label": "Sociable", "value": true },
+        { "icon": "🎓", "label": "Entrenado", "value": true }
+      ],
+      "description": "Max es un perro muy cariñoso y juguetón. Le encanta jugar con otros perros y es excelente con niños. Está buscando una familia que le brinde amor y cuidados.",
+      "image": "",
+      "emoji": "🐕",
+      "color": "#ffeaa7"
+    },
+    {
+      "id": 2,
+      "name": "Luna",
+      "species": "Perro",
+      "breed": "Poodle",
+      "age": 1,
+      "ageUnit": "año",
+      "gender": "Hembra",
+      "city": "Bello",
+      "weight": "8 kg",
+      "size": "Pequeño",
+      "shelter": "Patitas Felices",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunada", "value": true },
+        { "icon": "✂️", "label": "Castrada", "value": false },
+        { "icon": "😊", "label": "Sociable", "value": true },
+        { "icon": "🎓", "label": "Entrenada", "value": false }
+      ],
+      "description": "Luna es una perrita muy inteligente y enérgica. Le encanta aprender trucos nuevos y es muy obediente. Necesita una familia activa que pueda darle mucho ejercicio.",
+      "image": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=400&h=400&fit=crop",
+      "emoji": "🐩",
+      "color": "#dfe6e9"
+    },
+    {
+      "id": 3,
+      "name": "Milo",
+      "species": "Gato",
+      "breed": "Naranja Tabby",
+      "age": 6,
+      "ageUnit": "meses",
+      "gender": "Macho",
+      "city": "Envigado",
+      "weight": "3 kg",
+      "size": "Pequeño",
+      "shelter": "Refugio Michis",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunado", "value": true },
+        { "icon": "✂️", "label": "Castrado", "value": false },
+        { "icon": "😊", "label": "Sociable", "value": true },
+        { "icon": "🎓", "label": "Entrenado", "value": false }
+      ],
+      "description": "Milo es un gatito juguetón y curioso. Le encanta explorar y trepar. Es perfecto para una familia que busca un compañero felino lleno de energía.",
+      "image": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400&h=400&fit=crop",
+      "emoji": "🐈",
+      "color": "#f59375"
+    },
+    {
+      "id": 4,
+      "name": "Coco",
+      "species": "Gato",
+      "breed": "Siamés",
+      "age": 3,
+      "ageUnit": "años",
+      "gender": "Hembra",
+      "city": "Itagüí",
+      "weight": "4 kg",
+      "size": "Pequeño",
+      "shelter": "Gatitos Felices",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunada", "value": true },
+        { "icon": "✂️", "label": "Castrada", "value": true },
+        { "icon": "😊", "label": "Sociable", "value": false },
+        { "icon": "🎓", "label": "Entrenada", "value": true }
+      ],
+      "description": "Coco es una gata independiente y elegante. Prefiere la tranquilidad y es perfecta para personas que buscan una compañera calmada y sofisticada.",
+      "image": "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400&h=400&fit=crop",
+      "emoji": "🐱",
+      "color": "#f6a5b8"
+    },
+    {
+      "id": 5,
+      "name": "Rocky",
+      "species": "Perro",
+      "breed": "Labrador",
+      "age": 4,
+      "ageUnit": "años",
+      "gender": "Macho",
+      "city": "Medellín",
+      "weight": "28 kg",
+      "size": "Grande",
+      "shelter": "La Perla",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunado", "value": true },
+        { "icon": "✂️", "label": "Castrado", "value": true },
+        { "icon": "😊", "label": "Sociable", "value": true },
+        { "icon": "🎓", "label": "Entrenado", "value": true }
+      ],
+      "description": "Rocky es un perro grande, fuerte y muy leal. Es un excelente compañero para actividades al aire libre y protector con su familia.",
+      "image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop",
+      "emoji": "🦮",
+      "color": "#fdcb6e"
+    },
+    {
+      "id": 6,
+      "name": "Bella",
+      "species": "Gato",
+      "breed": "Persa",
+      "age": 2,
+      "ageUnit": "años",
+      "gender": "Hembra",
+      "city": "Sabaneta",
+      "weight": "5 kg",
+      "size": "Mediano",
+      "shelter": "Refugio Michis",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunada", "value": true },
+        { "icon": "✂️", "label": "Castrada", "value": true },
+        { "icon": "😊", "label": "Sociable", "value": true },
+        { "icon": "🎓", "label": "Entrenada", "value": false }
+      ],
+      "description": "Bella es una gata de pelo largo muy dulce y cariñosa. Le encanta recibir mimos y es perfecta para una familia que busca una compañera amorosa.",
+      "image": "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?w=400&h=400&fit=crop",
+      "emoji": "😺",
+      "color": "#a794d4"
+    },
+    {
+      "id": 7,
+      "name": "Luna",
+      "species": "Perro",
+      "breed": "Labrador",
+      "age": 2,
+      "ageUnit": "años",
+      "gender": "Hembra",
+      "city": "Sabaneta",
+      "weight": "5 kg",
+      "size": "Mediano",
+      "shelter": "Refugio Michis",
+      "status": "Disponible",
+      "traits": [
+        { "icon": "✓", "label": "Vacunada", "value": true },
+        { "icon": "✂️", "label": "Castrada", "value": true },
+        { "icon": "😊", "label": "Sociable", "value": true },
+        { "icon": "🎓", "label": "Entrenada", "value": false }
+      ],
+      "description": "Bella es una gata de pelo largo muy dulce y cariñosa. Le encanta recibir mimos y es perfecta para una familia que busca una compañera amorosa.",
+      "image": "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?w=400&h=400&fit=crop",
+      "emoji": "😺",
+      "color": "#a794d4"
+    }
+  ]
+}

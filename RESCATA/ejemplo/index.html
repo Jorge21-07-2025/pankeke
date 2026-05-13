@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registro / Login - Adopción de Mascotas</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/logo_sin_fon.png" type="image/png">
+</head>
+<body>
+    <main>
+        <h1 class="title">Registro y Acceso</h1>
+
+        <div class="container" id="container">
+            <div class="form-container sign-up-container">
+                <form action="{{ route('usuario.registrar') }}" method="POST">
+                    @csrf
+                    <h2>Crear Cuenta</h2>
+                    <span>o usa tu correo para registrarte</span>
+                    <input type="text" placeholder="Nombre" name="name" required />
+                    <input type="email" placeholder="Email" name="email" required />
+                    <input type="password" placeholder="Contraseña" name="password" required />
+                    <button type="submit" class="ghost">REGISTRARME</button>
+                </form>
+            </div>
+
+            <div class="form-container sign-in-container">
+                <form action="{{ route('usuario.login') }}" method="POST">
+                
+                    <h2>Iniciar Sesión</h2>
+                    <span>o usa tu cuenta</span>
+                    <input type="email" placeholder="Email" name="email" required />
+                    <input type="password" placeholder="Contraseña" name="password" required />
+                    <a class="forgot" href="#">¿Olvidaste tu contraseña?</a>
+                    <button type="submit">INICIAR SESIÓN</button>
+                </form>
+            </div>
+
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h2>Welcome Back!</h2>
+                        <p>Para mantenerte conectado, por favor inicia sesión con tus datos personales</p>
+                        <button class="ghost" id="signIn">INICIAR SESIÓN</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h2>Hola, Amigo!</h2>
+                        <p>Ingresa tus datos personales y comienza tu experiencia con nosotros</p>
+                        <button class="ghost" id="signUp">REGISTRARSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
