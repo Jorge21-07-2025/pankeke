@@ -79,13 +79,33 @@ class AdoptionRequestController extends Controller
         ]);
     }
 
+    public function update(Request $request, $id)
+    {
+        $adoption = AdoptionRequest::with('pet')->findOrFail($id);
+
+        if ($adoption->pet->user_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'No tienes permiso'], 403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:aprobado,rechazado',
+        ]);
+
+        $adoption->status = $validated['status'];
+        $adoption->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitud ' . ($validated['status'] === 'aprobado' ? 'aprobada' : 'rechazada') . ' con éxito',
+        ]);
+    }
+
     public function mine()
     {
         $requests = AdoptionRequest::with(['pet', 'user'])
             ->whereHas('pet', function ($q) {
                 $q->where('user_id', auth()->id());
             })
-            ->where('status', 'en_proceso')
             ->latest()
             ->get();
 
