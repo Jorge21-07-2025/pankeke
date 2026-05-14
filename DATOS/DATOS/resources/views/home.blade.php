@@ -29,6 +29,11 @@
                         <i class="fa-solid fa-paw huella"></i>
                     </div>
 
+                    @error('name')
+                        <div class="alert-danger">
+                            {{ $message }}
+                        </div>
+                    @enderror
                     @error('email')
                         <div class="alert-danger">
                             {{ $message }}
@@ -39,7 +44,6 @@
                             {{ $message }}
                         </div>
                     @enderror
-                    @if(session('success'))
                         <div class="alert-success">
                             {{ session('success') }}
                         </div>

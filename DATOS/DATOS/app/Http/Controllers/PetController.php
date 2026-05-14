@@ -68,7 +68,7 @@ class PetController extends Controller
         $pet->gender = $validated['gender'];
         $pet->city = $validated['city'];
         $pet->size = $validated['size'];
-        $pet->weight = $validated['weight'] ? $validated['weight'] . ' kg' : null;
+        $pet->weight = $validated['weight'] ?? null;
         $pet->color = $validated['color'] ?? null;
         $pet->description = $validated['description'] ?? null;
         $pet->vacunado = $request->boolean('vacunado');
@@ -125,7 +125,7 @@ class PetController extends Controller
         $pet->gender = $validated['gender'];
         $pet->city = $validated['city'];
         $pet->size = $validated['size'];
-        $pet->weight = $validated['weight'] ? $validated['weight'] . ' kg' : null;
+        $pet->weight = $validated['weight'] ?? null;
         $pet->color = $validated['color'] ?? null;
         $pet->description = $validated['description'] ?? null;
         $pet->vacunado = $request->boolean('vacunado');

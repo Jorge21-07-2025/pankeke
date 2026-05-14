@@ -87,11 +87,11 @@
             <h2 class="section-title">Impacto del programa</h2>
             <div class="stats-grid">
                 <div class="stat-card stat-rescued">
-                    <div class="stat-number">247</div>
+                    <div class="stat-number">{{ $rescuedThisYear }}</div>
                     <div class="stat-label">🐾 Rescatados<br>este año</div>
                 </div>
                 <div class="stat-card stat-adopted">
-                    <div class="stat-number">183</div>
+                    <div class="stat-number">{{ $adoptedCount }}</div>
                     <div class="stat-label">🏠 Adoptados</div>
                 </div>
             </div>

@@ -43,11 +43,14 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
 
-     ], [
-                'email.unique' => 'El correo ya fue registrado',
-                'email.required' => 'El campo correo es obligatorio',
-                'email.email' => 'Ingresa un formato de correo válido',
-
+        ], [
+            'name.required' => 'El nombre es obligatorio',
+            'email.unique' => 'El correo ya fue registrado',
+            'email.required' => 'El campo correo es obligatorio',
+            'email.email' => 'Ingresa un formato de correo válido',
+            'password.required' => 'La contraseña es obligatoria',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres',
+            'password.confirmed' => 'Las contraseñas no coinciden',
         ]);
 
         $user = new User();
@@ -56,7 +59,10 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success', 'Usuario registrado con éxito!');
+        Auth::login($user);
+        $request->session()->put('user_id', $user->id);
+
+        return redirect('dashboard');
     }
 
     public function showLogin(Request $request)
@@ -129,7 +135,11 @@ class AuthController extends Controller
         $solicitudesCount = AdoptionRequest::whereHas('pet', function ($q) {
             $q->where('user_id', auth()->id());
         })->where('status', 'en_proceso')->count();
-        return view('dashboard', compact('users', 'solicitudesCount'));
+
+        $rescuedThisYear = Pet::whereYear('created_at', now()->year)->count();
+        $adoptedCount = AdoptionRequest::where('status', 'aprobado')->count();
+
+        return view('dashboard', compact('users', 'solicitudesCount', 'rescuedThisYear', 'adoptedCount'));
     }
 
     public function perfil()

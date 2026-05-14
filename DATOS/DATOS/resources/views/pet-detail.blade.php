@@ -64,7 +64,7 @@
 
             <div class="info-cards">
                 <div class="info-card">
-                    <div class="info-value">{{ $pet->weight ?? '—' }}</div>
+                    <div class="info-value">{{ $pet->weight ? (is_numeric($pet->weight) ? $pet->weight . ' kg' : $pet->weight) : '—' }}</div>
                     <div class="info-label">Peso</div>
                 </div>
                 <div class="info-card">
