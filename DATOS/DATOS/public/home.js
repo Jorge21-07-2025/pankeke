@@ -306,3 +306,57 @@ if (btnPublicar && modalPublicar) {
         }
     });
 }
+
+async function cargarSolicitudes() {
+    const container = document.getElementById('lista-solicitudes');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/solicitudes/mias');
+        const data = await response.json();
+
+        if (!data.requests || data.requests.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">No tienes solicitudes de adopción pendientes.</p>';
+            return;
+        }
+
+        container.innerHTML = data.requests.map(req => `
+            <div class="solicitud-card">
+                <div class="solicitud-header">
+                    <span class="solicitud-pet-name">🐾 ${req.pet.name}</span>
+                    <span class="solicitud-status">${req.status}</span>
+                </div>
+                <div class="solicitud-info"><strong>De:</strong> ${req.user.name}</div>
+                <div class="solicitud-info"><strong>Email:</strong> ${req.user.email}</div>
+                ${req.phone ? `<div class="solicitud-info"><strong>Teléfono:</strong> ${req.phone}</div>` : ''}
+                ${req.message ? `<div class="solicitud-message">"${req.message}"</div>` : ''}
+            </div>
+        `).join('');
+    } catch (error) {
+        container.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 20px;">Error al cargar solicitudes</p>';
+    }
+}
+
+const btnNotificaciones = document.getElementById('btn-notificaciones');
+const modalNotificaciones = document.getElementById('modal-notificaciones');
+const closeNotificaciones = document.getElementById('close-notificaciones');
+
+if (btnNotificaciones && modalNotificaciones) {
+    btnNotificaciones.addEventListener('click', function(e) {
+        e.preventDefault();
+        cargarSolicitudes();
+        modalNotificaciones.style.display = "block";
+    });
+
+    if (closeNotificaciones) {
+        closeNotificaciones.onclick = function() {
+            modalNotificaciones.style.display = "none";
+        }
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == modalNotificaciones) {
+            modalNotificaciones.style.display = "none";
+        }
+    });
+}

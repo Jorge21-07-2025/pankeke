@@ -11,6 +11,7 @@ class AdoptionRequest extends Model
         'user_id',
         'pet_id',
         'message',
+        'phone',
         'status',
     ];
 

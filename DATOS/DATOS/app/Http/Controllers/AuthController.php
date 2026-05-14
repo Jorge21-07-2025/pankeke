@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use App\Models\AdoptionRequest;
 
 class AuthController extends Controller
 {
@@ -19,7 +21,7 @@ class AuthController extends Controller
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:6|confirmed',
 
      ], [
                 'email.unique' => 'El correo ya fue registrado',
@@ -39,12 +41,24 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $key = 'login:' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            return back()->withErrors([
+                'email' => "Demasiados intentos. Intenta de nuevo en $seconds segundos.",
+            ]);
+        }
+
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            RateLimiter::clear($key);
             return redirect()->intended('dashboard');
         }
+
+        RateLimiter::hit($key, 60);
 
         return back()->withErrors([
             'email' => 'Usuario o contraseña incorrectos',
@@ -54,7 +68,10 @@ class AuthController extends Controller
     public function dashboard()
     {
         $users = User::all();
-        return view('dashboard', compact('users'));
+        $solicitudesCount = AdoptionRequest::whereHas('pet', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->where('status', 'en_proceso')->count();
+        return view('dashboard', compact('users', 'solicitudesCount'));
     }
 
     public function logout(Request $request)

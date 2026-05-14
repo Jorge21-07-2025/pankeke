@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('global.css') }}">
     <link rel="stylesheet" href="{{ asset('pet-detail.css') }}">
     <link rel="icon" href="{{ asset('assets/logo_sin_fon.png') }}" type="image/png">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <div id="loadingState" class="loading-state" style="{{ $pet ? 'display: none;' : '' }}">
@@ -113,6 +114,30 @@
         </nav>
     </div>
 
+    <div id="modal-adoptar" class="modal" style="display: none;">
+        <div class="modal-content modal-adoptar-content">
+            <span class="close-button" id="close-adoptar">&times;</span>
+            <h2 style="color: #634832;">🐾 Adoptar a {{ $pet->name }}</h2>
+            <p style="color: var(--text-medium); font-size: 14px; margin-bottom: 16px;">
+                Tu solicitud será enviada al dueño de {{ $pet->name }}
+            </p>
+            <form id="form-adoptar">
+                @csrf
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Tu teléfono de contacto</label>
+                    <input type="text" name="phone" class="form-input" placeholder="Ej: 300 123 4567">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label">Mensaje (opcional)</label>
+                    <textarea name="message" class="form-input form-textarea" placeholder="Cuéntale al dueño por qué quieres adoptar a {{ $pet->name }}..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit" id="btn-enviar-solicitud">
+                    🐾 Enviar solicitud
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const petId = {{ $pet->id }};
 
@@ -152,11 +177,9 @@
             }
         }
 
-        function handleAdopt() {
-            const confirmed = confirm('¿Estás seguro que quieres iniciar el proceso de adopción de {{ $pet->name }}?');
-            if (confirmed) {
-                alert('¡Excelente! Pronto nos pondremos en contacto contigo para continuar con la adopción. 🐾');
-            }
+        function openAdoptModal() {
+            const modal = document.getElementById('modal-adoptar');
+            if (modal) modal.style.display = 'block';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -169,7 +192,64 @@
 
             const adoptBtn = document.getElementById('adoptBtn');
             if (adoptBtn) {
-                adoptBtn.addEventListener('click', handleAdopt);
+                adoptBtn.addEventListener('click', openAdoptModal);
+            }
+
+            const modal = document.getElementById('modal-adoptar');
+            const closeBtn = document.getElementById('close-adoptar');
+
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    modal.style.display = 'none';
+                };
+            }
+
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            const form = document.getElementById('form-adoptar');
+            const submitBtn = document.getElementById('btn-enviar-solicitud');
+
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Enviando...';
+
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        const response = await fetch('/adoptar/' + petId, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            modal.style.display = 'none';
+                            alert('✅ ' + result.message);
+                            this.reset();
+                        } else {
+                            alert('Error: ' + (result.message || 'No se pudo enviar la solicitud'));
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error al conectar con el servidor');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '🐾 Enviar solicitud';
+                    }
+                });
             }
         });
     </script>

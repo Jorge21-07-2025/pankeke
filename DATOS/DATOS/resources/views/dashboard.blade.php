@@ -13,11 +13,19 @@
     <header class="header">
         <div class="header-content">
             <div class="greeting">
-                <span class="greeting-text">Hola, buenas tardes 👋</span>
+                <span class="greeting-text">¡Hola, buenas tardes 👋!</span>
                 <h1 class="user-name" id="userName">{{ Auth::user()->name }}</h1>
             </div>
-            <div class="profile-avatar">
-                <span class="avatar-emoji">😊</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button id="btn-notificaciones" style="background: none; border: none; cursor: pointer; position: relative; font-size: 24px;">
+                    🔔
+                    @if($solicitudesCount > 0)
+                        <span class="notif-badge" id="notif-badge">{{ $solicitudesCount }}</span>
+                    @endif
+                </button>
+                <div class="profile-avatar">
+                    <span class="avatar-emoji">😊</span>
+                </div>
             </div>
         </div>
 
@@ -104,6 +112,17 @@
             <div class="report-options">
                 <button class="report-btn lost">🔍 Perdí una mascota</button>
                 <button class="report-btn emergency">🚨 Emergencia</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-notificaciones" class="modal">
+        <div class="modal-content modal-notif-content">
+            <span class="close-button" id="close-notificaciones">&times;</span>
+            <h2 style="color: #634832;">🔔 Solicitudes de adopción</h2>
+            <hr>
+            <div id="lista-solicitudes">
+                <p style="text-align: center; color: #888; padding: 20px;">Cargando solicitudes...</p>
             </div>
         </div>
     </div>
