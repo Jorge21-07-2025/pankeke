@@ -42,12 +42,12 @@
 
                     <h2>Crear Cuenta</h2>
                     <h3>usa tu correo para registrarte</h3>
-                    
+
                     <div class="password-wrapper">
                         <input type="text" placeholder="Nombre" name="name" required />
                         <i class="fa-solid fa-user toggle-pass" style="cursor: default;"></i>
                     </div>
-                    
+
                     <div class="password-wrapper">
                         <input type="email" placeholder="Email" name="email" autocomplete="off" required />
                         <i class="fa-solid fa-envelope toggle-pass" style="cursor: default;"></i>
@@ -85,7 +85,7 @@
 
                     <h2>Inicia Sesión</h2>
                     <h4>O crea una cuenta</h4>
-                    
+
                     <div class="password-wrapper">
                         <input type="email" placeholder="Email" name="email" id="email_login" autocomplete="off" required />
                         <i class="fa-solid fa-envelope toggle-pass" style="cursor: default;"></i>
@@ -94,6 +94,11 @@
                     <div class="password-wrapper">
                         <input type="password" placeholder="Contraseña" name="password" required />
                         <i class="fa-solid fa-eye toggle-pass" onclick="togglePassword(this)"></i>
+                    </div>
+
+                    <div style="display:flex;align-items:center;margin:8px 0;">
+                        <input type="checkbox" id="remember" name="remember" style="margin-right:8px;" />
+                        <label for="remember">Recordarme</label>
                     </div>
 
                     <a class="forgot" href="#"><h4>¿Olvidaste tu contraseña?</h4></a>

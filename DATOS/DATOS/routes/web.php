@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PetController;
 
 Route::get('/', [AuthController::class, 'home'])->name('home');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/registrar', [AuthController::class, 'registrar'])->name('usuario.registrar');
 Route::post('/login', [AuthController::class, 'login'])->name('usuario.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
