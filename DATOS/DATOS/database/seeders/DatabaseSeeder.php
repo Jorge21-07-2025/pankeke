@@ -16,10 +16,5 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
-
-        $this->call([
-            ShelterSeeder::class,
-            PetSeeder::class,
-        ]);
     }
 }

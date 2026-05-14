@@ -1,3 +1,17 @@
+const DOG_BREEDS = [
+    'Cruce', 'Labrador', 'Pastor Alemán', 'Buldog Francés', 'Poodle',
+    'Chihuahua', 'Golden Retriever', 'Husky', 'Beagle', 'Boxer',
+    'Dálmata', 'Rottweiler', 'Yorkshire Terrier', 'Schnauzer', 'Shih Tzu',
+    'Pug', 'Border Collie', 'Pitbull', 'Doberman', 'Gran Danés',
+    'San Bernardo', 'Maltés', 'Pomerania', 'West Highland', 'Otra',
+];
+
+const CAT_BREEDS = [
+    'Cruce', 'Persa', 'Siamés', 'Maine Coon', 'Bengalí',
+    'Sphynx', 'Ragdoll', 'British Shorthair', 'Scottish Fold', 'Abisinio',
+    'Angora', 'Burmés', 'Cornish Rex', 'Oriental', 'Otra',
+];
+
 let allPets = [];
 
 async function loadPets() {
@@ -29,7 +43,7 @@ function renderPets(pets) {
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                     <span class="pet-emoji" style="display: none; font-size: 48px; width: 100%; height: 100%; align-items: center; justify-content: center;">${pet.emoji || '🐾'}</span>
                 ` : `
-                    <span class="pet-emoji" style="font-size: 48px;">${pet.emoji || '🐾'}</span>
+                    <span class="pet-emoji" style="font-size: 48px;">🐾</span>
                 `}
             </div>
             <div class="pet-info">
@@ -71,6 +85,108 @@ function filterPets(searchTerm) {
     renderPets(filtered);
 }
 
+function updateBreedsList(species) {
+    const breedsList = document.getElementById('breeds-list');
+    if (!breedsList) return;
+    const breeds = species === 'Gato' ? CAT_BREEDS : DOG_BREEDS;
+    breedsList.innerHTML = breeds.map(b => `<option value="${b}">`).join('');
+}
+
+function setupSpeciesTabs() {
+    const tabs = document.querySelectorAll('.species-tab');
+    const speciesInput = document.getElementById('input-species');
+    if (!tabs.length || !speciesInput) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            speciesInput.value = this.dataset.species;
+            updateBreedsList(this.dataset.species);
+        });
+    });
+}
+
+function setupImagePreview() {
+    const fileInput = document.getElementById('pet-image-input');
+    const preview = document.getElementById('image-preview');
+    const placeholder = document.getElementById('file-upload-placeholder');
+    const removeBtn = document.getElementById('btn-remove-image');
+    if (!fileInput || !preview || !placeholder || !removeBtn) return;
+
+    fileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                removeBtn.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        preview.style.display = 'none';
+        preview.src = '';
+        placeholder.style.display = 'flex';
+        removeBtn.style.display = 'none';
+    });
+}
+
+function setupPublicarForm() {
+    const form = document.getElementById('form-publicar');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = this.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Publicando...';
+
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch('/mascotas', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const modal = document.getElementById('modal-publicar');
+                if (modal) modal.style.display = 'none';
+                this.reset();
+                const preview = document.getElementById('image-preview');
+                const placeholder = document.getElementById('file-upload-placeholder');
+                const removeBtn = document.getElementById('btn-remove-image');
+                if (preview) preview.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'flex';
+                if (removeBtn) removeBtn.style.display = 'none';
+                loadPets();
+                alert('✅ ' + data.message);
+            } else {
+                alert('Error: ' + (data.message || 'No se pudo publicar la mascota'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al conectar con el servidor');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🐾 Publicar mascota';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const hour = new Date().getHours();
     const greetingText = document.querySelector('.greeting-text');
@@ -106,6 +222,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 600);
         });
     }
+
+    botonesNav.forEach((item, index) => {
+        item.addEventListener('click', function() {
+            botonesNav.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    updateBreedsList('Perro');
+    setupSpeciesTabs();
+    setupImagePreview();
+    setupPublicarForm();
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -152,6 +280,29 @@ if (btnReportar && modalReportar) {
     window.addEventListener('click', function(event) {
         if (event.target == modalReportar) {
             modalReportar.style.display = "none";
+        }
+    });
+}
+
+const btnPublicar = document.getElementById('btn-publicar');
+const modalPublicar = document.getElementById('modal-publicar');
+const closePublicar = document.getElementById('close-publicar');
+
+if (btnPublicar && modalPublicar) {
+    btnPublicar.addEventListener('click', function(e) {
+        e.preventDefault();
+        modalPublicar.style.display = "block";
+    });
+
+    if (closePublicar) {
+        closePublicar.onclick = function() {
+            modalPublicar.style.display = "none";
+        }
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == modalPublicar) {
+            modalPublicar.style.display = "none";
         }
     });
 }

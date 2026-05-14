@@ -25,7 +25,18 @@ class Pet extends Model
         'emoji',
         'color',
         'user_id',
+        'vacunado',
+        'castrado',
+        'phone',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'vacunado' => 'boolean',
+            'castrado' => 'boolean',
+        ];
+    }
 
     public function shelter(): BelongsTo
     {

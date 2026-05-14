@@ -17,4 +17,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/mascotas/json', [PetController::class, 'index'])->name('mascotas.json');
     Route::get('/mascota/{id}', [PetController::class, 'show'])->name('mascotas.show');
     Route::get('/mascota/{id}/data', [PetController::class, 'data'])->name('mascotas.data');
+    Route::post('/mascotas', [PetController::class, 'store'])->name('mascotas.store');
 });
