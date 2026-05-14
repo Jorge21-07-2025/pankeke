@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Cookie;
+use App\Models\AdoptionRequest;
 
 class AuthController extends Controller
 {
@@ -39,7 +41,7 @@ class AuthController extends Controller
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:6|confirmed',
 
      ], [
                 'email.unique' => 'El correo ya fue registrado',
@@ -68,16 +70,21 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $key = 'login:' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            return back()->withErrors([
+                'email' => "Demasiados intentos. Intenta de nuevo en $seconds segundos.",
+            ]);
+        }
 
         $credentials = $request->only('email', 'password');
         $remember = (bool) $request->input('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+            RateLimiter::clear($key);
 
             $userId = Auth::id();
             $request->session()->put('user_id', $userId);
@@ -90,6 +97,8 @@ class AuthController extends Controller
 
             return redirect()->intended('dashboard');
         }
+
+        RateLimiter::hit($key, 60);
 
         return back()->withErrors([
             'email' => 'Usuario o contraseña incorrectos',
@@ -117,7 +126,39 @@ class AuthController extends Controller
         }
 
         $users = User::all();
-        return view('dashboard', compact('users'));
+        $solicitudesCount = AdoptionRequest::whereHas('pet', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->where('status', 'en_proceso')->count();
+        return view('dashboard', compact('users', 'solicitudesCount'));
+    }
+
+    public function perfil()
+    {
+        $user = auth()->user()->load(['pets', 'adoptionRequests.pet']);
+        return view('perfil', compact('user'));
+    }
+
+    public function perfilActualizar(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->phone = $validated['phone'] ?? $user->phone;
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = \Illuminate\Support\Facades\Storage::url($path);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Perfil actualizado correctamente');
     }
 
     public function logout(Request $request)

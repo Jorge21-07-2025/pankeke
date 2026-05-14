@@ -34,6 +34,11 @@
                             {{ $message }}
                         </div>
                     @enderror
+                    @error('password')
+                        <div class="alert-danger">
+                            {{ $message }}
+                        </div>
+                    @enderror
                     @if(session('success'))
                         <div class="alert-success">
                             {{ session('success') }}
@@ -55,6 +60,11 @@
 
                     <div class="password-wrapper">
                         <input type="password" placeholder="Contraseña" name="password" required />
+                        <i class="fa-solid fa-eye toggle-pass" onclick="togglePassword(this)"></i>
+                    </div>
+
+                    <div class="password-wrapper">
+                        <input type="password" placeholder="Confirmar contraseña" name="password_confirmation" required />
                         <i class="fa-solid fa-eye toggle-pass" onclick="togglePassword(this)"></i>
                     </div>
 
@@ -96,12 +106,6 @@
                         <i class="fa-solid fa-eye toggle-pass" onclick="togglePassword(this)"></i>
                     </div>
 
-                    <div style="display:flex;align-items:center;margin:8px 0;">
-                        <input type="checkbox" id="remember" name="remember" style="margin-right:8px;" />
-                        <label for="remember">Recordarme</label>
-                    </div>
-
-                    <a class="forgot" href="#"><h4>¿Olvidaste tu contraseña?</h4></a>
                     <button type="submit">INICIAR SESIÓN</button>
                 </form>
             </div>

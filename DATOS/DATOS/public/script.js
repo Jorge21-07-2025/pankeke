@@ -1,8 +1,6 @@
 const container = document.getElementById('container');
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
-const signUpMobile = document.getElementById('signUpMobile');
-const signInMobile = document.getElementById('signInMobile');
 
 if (signUpButton) {
   signUpButton.addEventListener('click', () => {
@@ -15,53 +13,6 @@ if (signInButton) {
     container.classList.remove('right-panel-active');
   });
 }
-
-if (signUpMobile) {
-  signUpMobile.addEventListener('click', () => {
-    container.classList.add('right-panel-active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-if (signInMobile) {
-  signInMobile.addEventListener('click', () => {
-    container.classList.remove('right-panel-active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-document.getElementById('signUpForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const data = new FormData(e.target);
-  const formData = Object.fromEntries(data.entries());
-  
-  console.log('Sign up:', formData);
-  
-  if (formData.name) {
-    localStorage.setItem('userName', formData.name);
-  }
-  
-  // Redirect to home page
-  window.location.href = 'home.html';
-});
-
-document.getElementById('signInForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const data = new FormData(e.target);
-  const formData = Object.fromEntries(data.entries());
-  
-  console.log('Sign in:', formData);
-  
-  if (formData.email) {
-    const emailName = formData.email.split('@')[0];
-    const userName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
-    localStorage.setItem('userName', userName);
-  }
-  
-  window.location.href = 'home.html';
-});
-
-console.log("Archivo script.js cargado correctamente");
 
 function togglePassword(icono) {
     // 1. Buscamos el input que está en el mismo contenedor que el icono

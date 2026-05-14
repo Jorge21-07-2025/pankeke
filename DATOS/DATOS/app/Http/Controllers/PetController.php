@@ -75,6 +75,7 @@ class PetController extends Controller
         $pet->castrado = $request->boolean('castrado');
         $pet->status = 'Disponible';
         $pet->user_id = auth()->id();
+        $pet->emoji = $validated['species'] === 'Gato' ? '🐈' : '🐕';
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('pets', 'public');
@@ -87,6 +88,76 @@ class PetController extends Controller
             'success' => true,
             'message' => 'Mascota publicada con éxito',
             'pet' => $pet,
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $pet = Pet::findOrFail($id);
+
+        if ($pet->user_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'No tienes permiso para editar esta mascota'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'species' => 'required|in:Perro,Gato',
+            'breed' => 'required|string|max:255',
+            'age' => 'required|integer|min:0|max:50',
+            'age_unit' => 'required|in:años,meses',
+            'gender' => 'required|in:Macho,Hembra',
+            'city' => 'required|string|max:255',
+            'size' => 'required|in:Pequeño,Mediano,Grande',
+            'weight' => 'nullable|numeric|min:0|max:200',
+            'color' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'vacunado' => 'boolean',
+            'castrado' => 'boolean',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        $pet->name = $validated['name'];
+        $pet->species = $validated['species'];
+        $pet->breed = $validated['breed'];
+        $pet->age = $validated['age'];
+        $pet->age_unit = $validated['age_unit'];
+        $pet->gender = $validated['gender'];
+        $pet->city = $validated['city'];
+        $pet->size = $validated['size'];
+        $pet->weight = $validated['weight'] ? $validated['weight'] . ' kg' : null;
+        $pet->color = $validated['color'] ?? null;
+        $pet->description = $validated['description'] ?? null;
+        $pet->vacunado = $request->boolean('vacunado');
+        $pet->castrado = $request->boolean('castrado');
+        $pet->emoji = $validated['species'] === 'Gato' ? '🐈' : '🐕';
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('pets', 'public');
+            $pet->image = Storage::url($path);
+        }
+
+        $pet->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mascota actualizada con éxito',
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $pet = Pet::findOrFail($id);
+
+        if ($pet->user_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'No tienes permiso para eliminar esta mascota'], 403);
+        }
+
+        $pet->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mascota eliminada con éxito',
         ]);
     }
 }

@@ -13,17 +13,72 @@
     <header class="header">
         <div class="header-content">
             <div class="greeting">
-                <span class="greeting-text">Hola, buenas tardes 👋</span>
+                <span class="greeting-text">¡Hola, buenas tardes 👋!</span>
                 <h1 class="user-name" id="userName">{{ Auth::user()->name }}</h1>
             </div>
-            <div class="profile-avatar">
-                <span class="avatar-emoji">😊</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button id="btn-mensajes" style="background: none; border: none; cursor: pointer; position: relative; font-size: 24px;">
+                    💬
+                    <span class="notif-badge" id="msg-badge" style="display: none;">0</span>
+                </button>
+                <button id="btn-notificaciones" style="background: none; border: none; cursor: pointer; position: relative; font-size: 24px;">
+                    🔔
+                    @if($solicitudesCount > 0)
+                        <span class="notif-badge" id="notif-badge">{{ $solicitudesCount }}</span>
+                    @endif
+                </button>
+                <div class="profile-avatar">
+                    <span class="avatar-emoji">😊</span>
+                </div>
             </div>
         </div>
 
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" placeholder="Buscar perros en adopción...">
+            <input type="text" class="search-input" placeholder="Buscar mascotas en adopción...">
+            <button class="btn-filtro" id="btn-filtro" title="Filtros">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                    <line x1="8" y1="12" x2="20" y2="12"></line>
+                    <line x1="12" y1="18" x2="20" y2="18"></line>
+                    <circle cx="8" cy="6" r="2" fill="currentColor"></circle>
+                    <circle cx="14" cy="12" r="2" fill="currentColor"></circle>
+                    <circle cx="17" cy="18" r="2" fill="currentColor"></circle>
+                </svg>
+            </button>
+        </div>
+        <div class="filtros-panel" id="filtros-panel">
+            <div class="filtros-grid">
+                <div class="filtro-group">
+                    <label class="filtro-label">Especie</label>
+                    <select class="filtro-select" id="filtro-especie">
+                        <option value="">Todas</option>
+                        <option value="Perro">Perro</option>
+                        <option value="Gato">Gato</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label class="filtro-label">Tamaño</label>
+                    <select class="filtro-select" id="filtro-tamano">
+                        <option value="">Todos</option>
+                        <option value="Pequeño">Pequeño</option>
+                        <option value="Mediano">Mediano</option>
+                        <option value="Grande">Grande</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label class="filtro-label">Género</label>
+                    <select class="filtro-select" id="filtro-genero">
+                        <option value="">Todos</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label class="filtro-label">Ciudad</label>
+                    <input type="text" class="filtro-input" id="filtro-ciudad" placeholder="Ej: Medellín">
+                </div>
+            </div>
         </div>
     </header>
 
@@ -53,33 +108,30 @@
     </main>
 
     <nav class="bottom-nav">
-        <button class="nav-item active">
+        <button class="nav-item active" onclick="irA('inicio')">
             <span class="nav-icon">🏠</span>
             <span class="nav-label">Inicio</span>
         </button>
-        <button class="nav-item" id="btn-explorer">
+        <button class="nav-item" id="btn-explorer" onclick="irA('explorar')">
             <span class="nav-icon">🔍</span>
             <span class="nav-label">Explorar</span>
         </button>
-        <button class="nav-item" id="btn-reportar">
+        <button class="nav-item" id="btn-reportar" onclick="irA('reportar')">
             <span class="nav-icon">📢</span>
             <span class="nav-label">Reportar</span>
         </button>
-        <button class="nav-item" id="btn-guardados">
+        <button class="nav-item" id="btn-guardados" onclick="irA('guardados')">
             <span class="nav-icon">❤️</span>
             <span class="nav-label">Guardados</span>
         </button>
-        <button class="nav-item" id="btn-publicar">
+        <button class="nav-item" id="btn-publicar" onclick="irA('publicar')">
             <span class="nav-icon">➕</span>
             <span class="nav-label">Publicar</span>
         </button>
-        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-            @csrf
-            <button type="submit" class="nav-item" style="background: none; border: none; cursor: pointer;">
-                <span class="nav-icon">👤</span>
-                <span class="nav-label">Salir</span>
-            </button>
-        </form>
+        <button class="nav-item" onclick="irA('perfil')">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
     </nav>
 
     <div id="modal-favoritos" class="modal">
@@ -104,6 +156,42 @@
             <div class="report-options">
                 <button class="report-btn lost">🔍 Perdí una mascota</button>
                 <button class="report-btn emergency">🚨 Emergencia</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-mensajes" class="modal">
+        <div class="modal-content modal-notif-content">
+            <span class="close-button" id="close-mensajes">&times;</span>
+            <h2 style="color: #634832;">💬 Mensajes</h2>
+            <hr>
+            <div id="lista-conversaciones">
+                <p style="text-align: center; color: #888; padding: 20px;">Cargando conversaciones...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-chat-respuesta" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 450px;">
+            <span class="close-button" id="close-chat-respuesta">&times;</span>
+            <h2 id="chat-respuesta-titulo" style="color: #634832;">💬 Chat</h2>
+            <div id="chat-respuesta-msgs" style="background: var(--bg-light); border-radius: var(--radius-md); padding: 12px; height: 300px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Cargando mensajes...</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="chat-respuesta-input" class="form-input" placeholder="Escribe tu respuesta..." style="flex: 1;">
+                <button id="btn-enviar-respuesta" class="btn-submit" style="width: auto; padding: 10px 20px; margin: 0;">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-notificaciones" class="modal">
+        <div class="modal-content modal-notif-content">
+            <span class="close-button" id="close-notificaciones">&times;</span>
+            <h2 style="color: #634832;">🔔 Solicitudes de adopción</h2>
+            <hr>
+            <div id="lista-solicitudes">
+                <p style="text-align: center; color: #888; padding: 20px;">Cargando solicitudes...</p>
             </div>
         </div>
     </div>
@@ -226,6 +314,9 @@
         </div>
     </div>
 
+    <script>
+        const CURRENT_USER_ID = {{ Auth::id() }};
+    </script>
     <script src="{{ asset('home.js') }}"></script>
 </body>
 </html>
