@@ -104,7 +104,7 @@
             <div class="overlay-container">
                 <div class="overlay">
                     <div class="overlay-panel overlay-left">
-                        <h2>Welcome Back!</h2>
+                        <h2>BIENVENIDO</h2>
                         <p1>Para mantenerte conectado, por favor inicia sesión con tus datos personales</p1>
                         <button class="ghost" id="signIn">INICIAR SESIÓN</button>
                     </div>
