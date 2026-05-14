@@ -9,31 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Cookie;
 use App\Models\AdoptionRequest;
+use App\Models\Pet;
 
 class AuthController extends Controller
 {
     public function home(Request $request)
     {
-        if (Auth::check()) {
-            return redirect('dashboard');
-        }
-
-        $rememberId = $request->cookie('remember_user_id');
-
-        if ($rememberId) {
-            $user = User::find($rememberId);
-
-            if ($user) {
-                Auth::login($user);
-                $request->session()->put('user_id', $user->id);
-
-                return redirect('dashboard');
-            }
-
-            Cookie::queue(Cookie::forget('remember_user_id'));
-        }
-
-        return view('home');
+        return view('home', ['logueado' => Auth::check()]);
     }
 
     public function registrar(Request $request) {
@@ -71,7 +53,7 @@ class AuthController extends Controller
             return redirect('dashboard');
         }
 
-        return view('home');
+        return view('home', ['logueado' => Auth::check()]);
     }
 
     public function login(Request $request)

@@ -123,38 +123,46 @@
     <div id="modal-adoptar" class="modal" style="display: none;">
         <div class="modal-content modal-adoptar-content">
             <span class="close-button" id="close-adoptar">&times;</span>
-            <h2 style="color: #634832;">🐾 Adoptar a {{ $pet->name }}</h2>
-            <p style="color: var(--text-medium); font-size: 14px; margin-bottom: 16px;">
-                Tu solicitud será enviada al dueño de {{ $pet->name }}
-            </p>
-            <form id="form-adoptar">
-                @csrf
-                <div class="form-group" style="margin-bottom: 12px;">
-                    <label class="form-label">Tu teléfono de contacto</label>
-                    <input type="text" name="phone" class="form-input" placeholder="Ej: 300 123 4567">
-                </div>
-                <div class="form-group" style="margin-bottom: 16px;">
-                    <label class="form-label">Mensaje (opcional)</label>
-                    <textarea name="message" class="form-input form-textarea" placeholder="Cuéntale al dueño por qué quieres adoptar a {{ $pet->name }}..."></textarea>
-                </div>
-                <button type="submit" class="btn-submit" id="btn-enviar-solicitud">
-                    🐾 Enviar solicitud
-                </button>
-            </form>
+            <div class="modal-header-pet">
+                <span class="pet-big-emoji">{{ $pet->emoji ?? '🐾' }}</span>
+                <h2>Adoptar a {{ $pet->name }}</h2>
+                <p>Tu solicitud será enviada al dueño</p>
+            </div>
+            <div class="modal-body">
+                <form id="form-adoptar">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">📞 Tu teléfono</label>
+                        <input type="text" name="phone" class="form-input" placeholder="Ej: 300 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">💬 Mensaje (opcional)</label>
+                        <textarea name="message" class="form-input form-textarea" placeholder="Cuéntale al dueño por qué quieres adoptar a {{ $pet->name }}..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit" id="btn-enviar-solicitud">
+                        🐾 Enviar solicitud
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div id="modal-chat" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content modal-chat-content">
             <span class="close-button" id="close-chat">&times;</span>
-            <h2 style="color: #634832;">💬 Chat con el dueño</h2>
-            <p style="font-size: 13px; color: var(--text-medium); margin-bottom: 12px;">Habla con el dueño de {{ $pet->name }} sobre la adopción</p>
-            <div id="chat-mensajes" style="background: var(--bg-light); border-radius: var(--radius-md); padding: 12px; height: 250px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
-                <p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Escribe un mensaje para empezar</p>
+            <div class="chat-header">
+                <div class="chat-header-avatar">{{ $pet->emoji ?? '🐾' }}</div>
+                <div class="chat-header-info">
+                    <h2>💬 {{ $pet->name }}</h2>
+                    <p>Habla con el dueño sobre la adopción</p>
+                </div>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="chat-input" class="form-input" placeholder="Escribe tu mensaje..." style="flex: 1;">
-                <button id="btn-enviar-chat" class="btn-submit" style="width: auto; padding: 10px 20px; margin: 0;">Enviar</button>
+            <div class="chat-messages-container" id="chat-mensajes">
+                <p style="text-align: center; color: #999; font-size: 13px; margin: auto;">Escribe un mensaje para empezar</p>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje...">
+                <button id="btn-enviar-chat"><span id="btn-chat-text">➤</span></button>
             </div>
         </div>
     </div>
@@ -238,9 +246,20 @@
             }
         }
 
+        function cerrarTodosModales() {
+            document.getElementById('modal-adoptar').style.display = 'none';
+            document.getElementById('modal-chat').style.display = 'none';
+        }
+
         function openAdoptModal() {
-            const modal = document.getElementById('modal-adoptar');
-            if (modal) modal.style.display = 'block';
+            cerrarTodosModales();
+            document.getElementById('modal-adoptar').style.display = 'block';
+        }
+
+        function openChatModal() {
+            cerrarTodosModales();
+            document.getElementById('modal-chat').style.display = 'block';
+            cargarChat();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -256,18 +275,18 @@
                 adoptBtn.addEventListener('click', openAdoptModal);
             }
 
-            const modal = document.getElementById('modal-adoptar');
-            const closeBtn = document.getElementById('close-adoptar');
+            const adoptModal = document.getElementById('modal-adoptar');
+            const closeAdopt = document.getElementById('close-adoptar');
 
-            if (closeBtn) {
-                closeBtn.onclick = function() {
-                    modal.style.display = 'none';
+            if (closeAdopt) {
+                closeAdopt.onclick = function() {
+                    adoptModal.style.display = 'none';
                 };
             }
 
             window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
+                if (event.target == adoptModal) {
+                    adoptModal.style.display = 'none';
                 }
             });
 
@@ -297,7 +316,7 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            modal.style.display = 'none';
+                            adoptModal.style.display = 'none';
                             alert('✅ ' + result.message);
                             this.reset();
                         } else {
@@ -322,10 +341,7 @@
         const chatContainer = document.getElementById('chat-mensajes');
 
         if (chatBtn && chatModal) {
-            chatBtn.addEventListener('click', function() {
-                chatModal.style.display = 'block';
-                cargarChat();
-            });
+            chatBtn.addEventListener('click', openChatModal);
         }
 
         if (chatClose) {
@@ -348,7 +364,7 @@
             if (!texto) return;
 
             chatSend.disabled = true;
-            chatSend.textContent = 'Enviando...';
+            chatSend.querySelector('#btn-chat-text').textContent = '...';
 
             try {
                 const response = await fetch('/mensajes/' + petId, {
@@ -373,7 +389,7 @@
                 alert('Error al enviar mensaje');
             } finally {
                 chatSend.disabled = false;
-                chatSend.textContent = 'Enviar';
+                chatSend.querySelector('#btn-chat-text').textContent = '➤';
             }
         }
 
@@ -392,11 +408,10 @@
 
                 chatContainer.innerHTML = data.messages.map(msg => {
                     const esMio = msg.from_user_id === {{ Auth::id() }};
-                    return '<div style="display: flex; justify-content: ' + (esMio ? 'flex-end' : 'flex-start') + ';">' +
-                        '<div style="max-width: 80%; padding: 8px 12px; border-radius: var(--radius-md); background: ' + (esMio ? 'var(--primary-orange)' : 'white') + '; color: ' + (esMio ? 'white' : 'var(--text-dark)') + '; font-size: 14px;">' +
+                    return '<div class="chat-message-bubble ' + (esMio ? 'mine' : 'theirs') + '">' +
                         msg.message +
-                        '<div style="font-size: 10px; opacity: 0.7; margin-top: 4px;">' + new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</div>' +
-                        '</div></div>';
+                        '<div class="chat-message-time">' + new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</div>' +
+                        '</div>';
                 }).join('');
 
                 chatContainer.scrollTop = chatContainer.scrollHeight;

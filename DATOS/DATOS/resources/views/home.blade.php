@@ -18,6 +18,17 @@
 <body>
     <main>
 
+        @if($logueado)
+            <div style="text-align: center; padding: 12px; background: #e8f5e9; border-radius: 12px; margin-bottom: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <span style="font-size: 14px; color: #2e7d32;">
+                    Ya iniciaste sesión como <strong>{{ Auth::user()->name }}</strong>
+                </span>
+                <a href="{{ route('dashboard') }}" style="display: inline-block; margin-left: 10px; padding: 6px 16px; background: #2e7d32; color: white; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 600;">
+                    Entrar al inicio
+                </a>
+            </div>
+        @endif
+
         <div class="container" id="container">
             <div class="form-container sign-up-container">
                 <form action="{{ route('usuario.registrar') }}" method="POST">
@@ -44,10 +55,6 @@
                             {{ $message }}
                         </div>
                     @enderror
-                        <div class="alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
 
                     <h2>Crear Cuenta</h2>
                     <h3>usa tu correo para registrarte</h3>
