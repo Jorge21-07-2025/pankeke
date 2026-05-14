@@ -337,6 +337,28 @@ async function cargarSolicitudes() {
     }
 }
 
+const btnEditarPerfil = document.getElementById('btn-editar-perfil');
+const modalEditarPerfil = document.getElementById('modal-editar-perfil');
+const closeEditarPerfil = document.getElementById('close-editar-perfil');
+
+if (btnEditarPerfil && modalEditarPerfil) {
+    btnEditarPerfil.addEventListener('click', function() {
+        modalEditarPerfil.style.display = 'block';
+    });
+
+    if (closeEditarPerfil) {
+        closeEditarPerfil.onclick = function() {
+            modalEditarPerfil.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == modalEditarPerfil) {
+            modalEditarPerfil.style.display = 'none';
+        }
+    });
+}
+
 const btnNotificaciones = document.getElementById('btn-notificaciones');
 const modalNotificaciones = document.getElementById('modal-notificaciones');
 const closeNotificaciones = document.getElementById('close-notificaciones');

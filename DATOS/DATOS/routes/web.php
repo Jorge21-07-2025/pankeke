@@ -21,4 +21,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/mascotas', [PetController::class, 'store'])->name('mascotas.store');
     Route::post('/adoptar/{pet}', [AdoptionRequestController::class, 'store'])->name('adoptar.store');
     Route::get('/solicitudes/mias', [AdoptionRequestController::class, 'mine'])->name('solicitudes.mias');
+    Route::get('/perfil', [AuthController::class, 'perfil'])->name('perfil');
+    Route::post('/perfil/actualizar', [AuthController::class, 'perfilActualizar'])->name('perfil.actualizar');
 });

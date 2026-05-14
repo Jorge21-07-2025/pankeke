@@ -106,7 +106,6 @@
                         <i class="fa-solid fa-eye toggle-pass" onclick="togglePassword(this)"></i>
                     </div>
 
-                    <a class="forgot" href="#"><h4>¿Olvidaste tu contraseña?</h4></a>
                     <button type="submit">INICIAR SESIÓN</button>
                 </form>
             </div>

@@ -74,6 +74,35 @@ class AuthController extends Controller
         return view('dashboard', compact('users', 'solicitudesCount'));
     }
 
+    public function perfil()
+    {
+        $user = auth()->user()->load(['pets', 'adoptionRequests.pet']);
+        return view('perfil', compact('user'));
+    }
+
+    public function perfilActualizar(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->phone = $validated['phone'] ?? $user->phone;
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = \Illuminate\Support\Facades\Storage::url($path);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Perfil actualizado correctamente');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

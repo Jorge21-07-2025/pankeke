@@ -81,13 +81,10 @@
             <span class="nav-icon">➕</span>
             <span class="nav-label">Publicar</span>
         </button>
-        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-            @csrf
-            <button type="submit" class="nav-item" style="background: none; border: none; cursor: pointer;">
-                <span class="nav-icon">👤</span>
-                <span class="nav-label">Salir</span>
-            </button>
-        </form>
+        <button class="nav-item" onclick="window.location.href='{{ route('perfil') }}'">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </button>
     </nav>
 
     <div id="modal-favoritos" class="modal">

@@ -75,6 +75,7 @@ class PetController extends Controller
         $pet->castrado = $request->boolean('castrado');
         $pet->status = 'Disponible';
         $pet->user_id = auth()->id();
+        $pet->emoji = $validated['species'] === 'Gato' ? '🐈' : '🐕';
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('pets', 'public');

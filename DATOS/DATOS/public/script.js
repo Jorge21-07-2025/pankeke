@@ -1,8 +1,6 @@
 const container = document.getElementById('container');
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
-const signUpMobile = document.getElementById('signUpMobile');
-const signInMobile = document.getElementById('signInMobile');
 
 if (signUpButton) {
   signUpButton.addEventListener('click', () => {
@@ -15,22 +13,6 @@ if (signInButton) {
     container.classList.remove('right-panel-active');
   });
 }
-
-if (signUpMobile) {
-  signUpMobile.addEventListener('click', () => {
-    container.classList.add('right-panel-active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-if (signInMobile) {
-  signInMobile.addEventListener('click', () => {
-    container.classList.remove('right-panel-active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-console.log("Archivo script.js cargado correctamente");
 
 function togglePassword(icono) {
     // 1. Buscamos el input que está en el mismo contenedor que el icono
