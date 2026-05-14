@@ -74,10 +74,10 @@ class MessageController extends Controller
 
         $messages = Message::with(['fromUser'])
             ->where(function ($q) use ($userId, $validated) {
-                $q->where('from_user_id', $userId)->where('to_user_id', $validated['user_id']);
-            })
-            ->orWhere(function ($q) use ($userId, $validated) {
-                $q->where('from_user_id', $validated['user_id'])->where('to_user_id', $userId);
+                $q->where('from_user_id', $userId)->where('to_user_id', $validated['user_id'])
+                  ->orWhere(function ($q2) use ($userId, $validated) {
+                      $q2->where('from_user_id', $validated['user_id'])->where('to_user_id', $userId);
+                  });
             })
             ->where('pet_id', $validated['pet_id'])
             ->orderBy('created_at')

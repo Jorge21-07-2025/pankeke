@@ -381,7 +381,7 @@
 
                 if (data.success) {
                     chatInput.value = '';
-                    cargarChat();
+                    await cargarChat();
                 } else {
                     alert('Error: ' + data.message);
                 }
