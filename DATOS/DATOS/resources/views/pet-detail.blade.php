@@ -44,19 +44,19 @@
             </div>
 
             <div class="traits-container">
-                <div class="trait-badge active">
+                <div class="trait-badge {{ $pet->vacunado ? 'active' : 'inactive' }}">
                     <span class="trait-icon">✓</span>
                     <span>Vacunado</span>
                 </div>
-                <div class="trait-badge {{ $pet->gender === 'Hembra' ? 'inactive' : 'active' }}">
+                <div class="trait-badge {{ $pet->castrado ? 'active' : 'inactive' }}">
                     <span class="trait-icon">✂️</span>
                     <span>Castrado</span>
                 </div>
-                <div class="trait-badge active">
+                <div class="trait-badge {{ $pet->sociable ? 'active' : 'inactive' }}">
                     <span class="trait-icon">😊</span>
                     <span>Sociable</span>
                 </div>
-                <div class="trait-badge inactive">
+                <div class="trait-badge {{ $pet->entrenado ? 'active' : 'inactive' }}">
                     <span class="trait-icon">🎓</span>
                     <span>Entrenado</span>
                 </div>
@@ -72,8 +72,22 @@
                     <div class="info-label">Tamaño</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-value">{{ $pet->shelter?->name ?? 'No especificado' }}</div>
-                    <div class="info-label">Refugio</div>
+                    <div class="info-value">
+                        @if($pet->user->role === 'refugio' || $pet->user->role === 'veterinaria')
+                            <a href="/organizacion/{{ $pet->user->id }}" style="color: var(--primary-orange); text-decoration: none;">{{ $pet->user->name }}</a>
+                        @elseif($pet->user->refugio)
+                            {{ $pet->user->refugio }}
+                        @else
+                            {{ $pet->shelter?->name ?? 'Particular' }}
+                        @endif
+                    </div>
+                    <div class="info-label">
+                        @if($pet->user->role === 'refugio') Refugio
+                        @elseif($pet->user->role === 'veterinaria') Veterinaria
+                        @elseif($pet->user->refugio) Refugio asociado
+                        @else Publicado por
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -177,6 +191,22 @@
             } else {
                 window.location.href = '{{ route('dashboard') }}';
             }
+        }
+
+        function irA(seccion) {
+            if (seccion === 'perfil') {
+                window.location.href = '/perfil';
+                return;
+            }
+            if (seccion === 'inicio') {
+                window.location.href = '/dashboard';
+                return;
+            }
+            if (seccion === 'guardados') {
+                window.location.href = '/guardados';
+                return;
+            }
+            window.location.href = '/dashboard?accion=' + seccion;
         }
 
         let favoritoServidor = false;
@@ -374,7 +404,7 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({ message: texto }),
+                    body: JSON.stringify({ message: texto, to_user_id: petOwnerId }),
                 });
 
                 const data = await response.json();

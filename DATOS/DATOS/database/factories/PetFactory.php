@@ -51,7 +51,7 @@ class PetFactory extends Factory
             'city' => $this->faker->randomElement($cities),
             'weight' => $pet['weight'],
             'size' => $pet['size'],
-            'shelter_id' => Shelter::inRandomOrder()->first()->id ?? 1,
+            'shelter_id' => Shelter::factory()->create()->id,
             'status' => 'disponible',
             'description' => $this->faker->randomElement($descriptions),
             'image' => ($species === 'Gato'
@@ -76,6 +76,8 @@ class PetFactory extends Factory
             'user_id' => User::inRandomOrder()->first()->id ?? 1,
             'vacunado' => true,
             'castrado' => $this->faker->boolean(70),
+            'sociable' => $this->faker->boolean(80),
+            'entrenado' => $this->faker->boolean(40),
             'phone' => $this->faker->randomElement(['310 123 4567', '320 765 4321', '300 998 8776', '']),
         ];
     }

@@ -10,13 +10,24 @@ class PetController extends Controller
 {
     public function index()
     {
-        $pets = Pet::with('shelter')->where('status', 'disponible')->get();
-        return response()->json(['pets' => $pets]);
+        $perPage = request('per_page', 12);
+        $page = request('page', 1);
+
+        $pets = Pet::with('shelter')
+            ->where('status', 'disponible')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'pets' => $pets->items(),
+            'has_more' => $pets->hasMorePages(),
+            'next_page' => $pets->currentPage() + 1,
+            'total' => $pets->total(),
+        ]);
     }
 
     public function show($id)
     {
-        $pet = Pet::with('shelter')->findOrFail($id);
+        $pet = Pet::with(['shelter', 'user'])->findOrFail($id);
         return view('pet-detail', compact('pet'));
     }
 
@@ -27,8 +38,8 @@ class PetController extends Controller
         $traits = [
             ['icon' => '✓', 'label' => 'Vacunado', 'value' => $pet->vacunado],
             ['icon' => '✂️', 'label' => 'Castrado', 'value' => $pet->castrado],
-            ['icon' => '😊', 'label' => 'Sociable', 'value' => true],
-            ['icon' => '🎓', 'label' => 'Entrenado', 'value' => false],
+            ['icon' => '😊', 'label' => 'Sociable', 'value' => $pet->sociable],
+            ['icon' => '🎓', 'label' => 'Entrenado', 'value' => $pet->entrenado],
         ];
 
         return response()->json([
@@ -55,6 +66,8 @@ class PetController extends Controller
             'phone' => 'nullable|string|max:20',
             'vacunado' => 'boolean',
             'castrado' => 'boolean',
+            'sociable' => 'boolean',
+            'entrenado' => 'boolean',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
@@ -73,6 +86,8 @@ class PetController extends Controller
         $pet->description = $validated['description'] ?? null;
         $pet->vacunado = $request->boolean('vacunado');
         $pet->castrado = $request->boolean('castrado');
+        $pet->sociable = $request->boolean('sociable');
+        $pet->entrenado = $request->boolean('entrenado');
         $pet->status = 'Disponible';
         $pet->user_id = auth()->id();
         $pet->emoji = $validated['species'] === 'Gato' ? '🐈' : '🐕';
@@ -113,6 +128,8 @@ class PetController extends Controller
             'phone' => 'nullable|string|max:20',
             'vacunado' => 'boolean',
             'castrado' => 'boolean',
+            'sociable' => 'boolean',
+            'entrenado' => 'boolean',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
@@ -130,6 +147,8 @@ class PetController extends Controller
         $pet->description = $validated['description'] ?? null;
         $pet->vacunado = $request->boolean('vacunado');
         $pet->castrado = $request->boolean('castrado');
+        $pet->sociable = $request->boolean('sociable');
+        $pet->entrenado = $request->boolean('entrenado');
         $pet->emoji = $validated['species'] === 'Gato' ? '🐈' : '🐕';
 
         if ($request->hasFile('image')) {

@@ -20,12 +20,14 @@ class AuthController extends Controller
 
     public function registrar(Request $request) {
 
-        $request->validate([
+        $rules = [
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
+            'role' => 'required|in:normal,rescatista,refugio,veterinaria',
+        ];
 
-        ], [
+        $mensajes = [
             'name.required' => 'El nombre es obligatorio',
             'email.unique' => 'El correo ya fue registrado',
             'email.required' => 'El campo correo es obligatorio',
@@ -33,12 +35,24 @@ class AuthController extends Controller
             'password.required' => 'La contraseña es obligatoria',
             'password.min' => 'La contraseña debe tener al menos 6 caracteres',
             'password.confirmed' => 'Las contraseñas no coinciden',
-        ]);
+        ];
+
+        if (in_array($request->role, ['refugio', 'veterinaria'])) {
+            $rules['nombre_lugar'] = 'required|string|max:255';
+            $rules['direccion'] = 'nullable|string|max:255';
+            $mensajes['nombre_lugar.required'] = 'El nombre del lugar es obligatorio';
+        }
+
+        $request->validate($rules, $mensajes);
 
         $user = new User();
-        $user->name = $request->name;
+        $user->name = in_array($request->role, ['refugio', 'veterinaria']) ? $request->nombre_lugar : $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
+        $user->role = $request->role;
+        if (in_array($request->role, ['refugio', 'veterinaria'])) {
+            $user->direccion = $request->direccion;
+        }
         $user->save();
 
         Auth::login($user);
@@ -135,12 +149,24 @@ class AuthController extends Controller
         $user = auth()->user();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required_without:refugio|string|max:255',
             'phone' => 'nullable|string|max:20',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'refugio' => 'nullable|string|max:255',
+            'tiene_refugio' => 'nullable|in:si,no',
         ]);
 
-        $user->name = $validated['name'];
+        if ($request->has('tiene_refugio')) {
+            if ($request->tiene_refugio === 'si' && $request->filled('refugio')) {
+                $user->refugio = $request->refugio;
+            } else {
+                $user->refugio = null;
+            }
+            $user->save();
+            return back()->with('success', 'Información de refugio actualizada');
+        }
+
+        $user->name = $validated['name'] ?? $user->name;
         $user->phone = $validated['phone'] ?? $user->phone;
 
         if ($request->hasFile('avatar')) {
@@ -151,6 +177,15 @@ class AuthController extends Controller
         $user->save();
 
         return back()->with('success', 'Perfil actualizado correctamente');
+    }
+
+    public function volverseRescatista(Request $request)
+    {
+        $user = auth()->user();
+        $user->role = 'rescatista';
+        $user->save();
+
+        return back()->with('success', '¡Ahora eres rescatista!');
     }
 
     public function logout(Request $request)

@@ -13,20 +13,48 @@ const CAT_BREEDS = [
 ];
 
 let allPets = [];
+let currentPage = 1;
+let hasMore = true;
+let cargandoMas = false;
 
 async function loadPets() {
+    currentPage = 1;
+    hasMore = true;
+    allPets = [];
+    await cargarPagina(1, true);
+}
+
+async function cargarPagina(pagina, reemplazar) {
+    if (cargandoMas) return;
+    cargandoMas = true;
+
     try {
-        const response = await fetch('/mascotas/json');
+        const response = await fetch('/mascotas/json?page=' + pagina + '&per_page=12');
         const data = await response.json();
-        allPets = data.pets;
-        renderPets(allPets);
+
+        if (reemplazar) {
+            allPets = data.pets;
+        } else {
+            allPets = allPets.concat(data.pets);
+        }
+
+        hasMore = data.has_more;
+        currentPage = pagina;
+        renderPets(allPets, hasMore);
     } catch (error) {
         console.error('Error loading pets:', error);
-        showError();
+        if (reemplazar) showError();
+    } finally {
+        cargandoMas = false;
     }
 }
 
-function renderPets(pets) {
+async function cargarMas() {
+    if (!hasMore || cargandoMas) return;
+    await cargarPagina(currentPage + 1, false);
+}
+
+function renderPets(pets, mostrarMas) {
     const petsGrid = document.getElementById('petsGrid');
     if (!petsGrid) return;
 
@@ -35,7 +63,7 @@ function renderPets(pets) {
         return;
     }
 
-    petsGrid.innerHTML = pets.map(pet => `
+    let html = pets.map(pet => `
         <div class="pet-card" data-pet-id="${pet.id}" onclick="viewPetDetail(${pet.id})">
             <div class="pet-image-container" style="background: linear-gradient(135deg, ${pet.color || '#ffeaa7'}, ${pet.color || '#fdcb6e'}dd)">
                 ${pet.image ? `
@@ -53,6 +81,14 @@ function renderPets(pets) {
             </div>
         </div>
     `).join('');
+
+    if (mostrarMas) {
+        html += '<div style="grid-column: 1/-1; text-align: center; padding: 20px 0;">' +
+            '<button onclick="cargarMas()" id="btn-cargar-mas" style="padding: 12px 32px; background: var(--bg-white); border: 2px solid var(--primary-orange); color: var(--primary-orange); border-radius: var(--radius-md); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Cargar más mascotas</button>' +
+            '</div>';
+    }
+
+    petsGrid.innerHTML = html;
 }
 
 function showError() {
@@ -97,7 +133,7 @@ function filterPets(searchTerm) {
         return true;
     });
 
-    renderPets(filtered);
+    renderPets(filtered, false);
 }
 
 function setupFiltros() {
@@ -247,6 +283,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const params = new URLSearchParams(window.location.search);
     const accion = params.get('accion');
     if (accion) {
+        if (accion === 'guardados') {
+            window.location.href = '/guardados';
+            return;
+        }
         setTimeout(() => irA(accion), 300);
     }
 
@@ -256,6 +296,17 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPublicarForm();
     setupFiltros();
 });
+
+function volverAlInicio() {
+    if (window.history.replaceState) {
+        const urlBase = window.location.pathname;
+        window.history.replaceState({}, '', urlBase);
+    }
+    const botones = document.querySelectorAll('.nav-item');
+    botones.forEach(b => b.classList.remove('active'));
+    if (botones[0]) botones[0].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function irA(seccion) {
     const enDashboard = document.getElementById('petsGrid') !== null;
@@ -269,6 +320,11 @@ function irA(seccion) {
 
     if (seccion === 'perfil') {
         window.location.href = '/perfil';
+        return;
+    }
+
+    if (seccion === 'guardados') {
+        window.location.href = '/guardados';
         return;
     }
 
@@ -291,8 +347,7 @@ function irA(seccion) {
                 break;
             }
             case 'guardados': {
-                const modal = document.getElementById('modal-favoritos');
-                if (modal) modal.style.display = 'block';
+                window.location.href = '/guardados';
                 break;
             }
             case 'publicar': {
@@ -340,25 +395,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (btnGuardados && modalFavoritos) {
-        btnGuardados.addEventListener('click', function(e) {
-            e.preventDefault();
-            cargarFavoritosServidor();
-            modalFavoritos.style.display = "block";
-        });
-
-        if (btnCerrarModal) {
-            btnCerrarModal.onclick = function() {
-                modalFavoritos.style.display = "none";
-            }
+    if (btnCerrarModal) {
+        btnCerrarModal.onclick = function() {
+            modalFavoritos.style.display = "none";
+            volverAlInicio();
         }
-
-        window.addEventListener('click', function(event) {
-            if (event.target == modalFavoritos) {
-                modalFavoritos.style.display = "none";
-            }
-        });
     }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == modalFavoritos) {
+            modalFavoritos.style.display = "none";
+            volverAlInicio();
+        }
+    });
 });
 
 const btnReportar = document.getElementById('btn-reportar');
@@ -374,12 +423,14 @@ if (btnReportar && modalReportar) {
     if (closeReportar) {
         closeReportar.onclick = function() {
             modalReportar.style.display = "none";
+            volverAlInicio();
         }
     }
 
     window.addEventListener('click', function(event) {
         if (event.target == modalReportar) {
             modalReportar.style.display = "none";
+            volverAlInicio();
         }
     });
 }
@@ -397,12 +448,14 @@ if (btnPublicar && modalPublicar) {
     if (closePublicar) {
         closePublicar.onclick = function() {
             modalPublicar.style.display = "none";
+            volverAlInicio();
         }
     }
 
     window.addEventListener('click', function(event) {
         if (event.target == modalPublicar) {
             modalPublicar.style.display = "none";
+            volverAlInicio();
         }
     });
 }
@@ -533,12 +586,15 @@ if (btnNotificaciones && modalNotificaciones) {
 const btnMensajes = document.getElementById('btn-mensajes');
 const modalMensajes = document.getElementById('modal-mensajes');
 const closeMensajes = document.getElementById('close-mensajes');
-const modalChatRespuesta = document.getElementById('modal-chat-respuesta');
-const closeChatRespuesta = document.getElementById('close-chat-respuesta');
-const chatRespuestaInput = document.getElementById('chat-respuesta-input');
-const btnEnviarRespuesta = document.getElementById('btn-enviar-respuesta');
-const chatRespuestaMsgs = document.getElementById('chat-respuesta-msgs');
-const chatRespuestaTitulo = document.getElementById('chat-respuesta-titulo');
+const chatSidebar = document.getElementById('chat-sidebar');
+const chatMain = document.getElementById('chat-main');
+const chatPlaceholder = document.getElementById('chat-placeholder');
+const chatActive = document.getElementById('chat-active');
+const chatActiveMsgs = document.getElementById('chat-active-msgs');
+const chatActiveTitle = document.getElementById('chat-active-title');
+const chatActiveInput = document.getElementById('chat-active-input');
+const btnEnviarChatActivo = document.getElementById('btn-enviar-chat-activo');
+const chatBackBtn = document.getElementById('chat-back-btn');
 
 let chatActualUserId = null;
 let chatActualPetId = null;
@@ -561,7 +617,7 @@ async function cargarConversaciones() {
         }
 
         container.innerHTML = data.conversations.map(conv => `
-            <div class="conversacion-card" data-user-id="${conv.user.id}" data-pet-id="${conv.pet.id}" data-user-name="${conv.user.name}" data-pet-name="${conv.pet.name}" style="padding: 12px; border-bottom: 1px solid var(--bg-light); cursor: pointer; transition: background 0.2s;">
+            <div class="conversacion-card" data-user-id="${conv.user.id}" data-pet-id="${conv.pet.id}" data-user-name="${conv.user.name}" data-pet-name="${conv.pet.name}">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <strong style="font-size: 15px;">🐾 ${conv.pet.name}</strong>
@@ -575,14 +631,23 @@ async function cargarConversaciones() {
 
         container.querySelectorAll('.conversacion-card').forEach(card => {
             card.addEventListener('click', function() {
+                document.querySelectorAll('.conversacion-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+
                 chatActualUserId = this.dataset.userId;
                 chatActualPetId = this.dataset.petId;
                 const petName = this.dataset.petName;
                 const userName = this.dataset.userName;
-                chatRespuestaTitulo.textContent = '💬 ' + petName + ' · ' + userName;
-                modalMensajes.style.display = 'none';
-                modalChatRespuesta.style.display = 'block';
-                cargarChatRespuesta();
+                chatActiveTitle.textContent = '🐾 ' + petName + ' · ' + userName;
+
+                chatPlaceholder.style.display = 'none';
+                chatActive.style.display = 'flex';
+
+                if (window.innerWidth <= 640) {
+                    chatSidebar.classList.add('hidden');
+                }
+
+                cargarChatActivo();
             });
         });
 
@@ -592,10 +657,10 @@ async function cargarConversaciones() {
     }
 }
 
-async function cargarChatRespuesta() {
+async function cargarChatActivo() {
     if (!chatActualUserId || !chatActualPetId) return;
 
-    chatRespuestaMsgs.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Cargando mensajes...</p>';
+    chatActiveMsgs.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Cargando mensajes...</p>';
 
     try {
         const response = await fetch('/mensajes/chat?user_id=' + chatActualUserId + '&pet_id=' + chatActualPetId, {
@@ -604,13 +669,13 @@ async function cargarChatRespuesta() {
         const data = await response.json();
 
         if (!data.messages || data.messages.length === 0) {
-            chatRespuestaMsgs.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Sin mensajes aún</p>';
+            chatActiveMsgs.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Sin mensajes aún</p>';
             return;
         }
 
         const userId = typeof CURRENT_USER_ID !== 'undefined' ? CURRENT_USER_ID : 0;
 
-        chatRespuestaMsgs.innerHTML = data.messages.map(msg => {
+        chatActiveMsgs.innerHTML = data.messages.map(msg => {
             const esMio = msg.from_user_id === userId;
             return '<div style="display: flex; justify-content: ' + (esMio ? 'flex-end' : 'flex-start') + ';">' +
                 '<div style="max-width: 80%; padding: 8px 12px; border-radius: var(--radius-md); background: ' + (esMio ? 'var(--primary-orange)' : 'white') + '; color: ' + (esMio ? 'white' : 'var(--text-dark)') + '; font-size: 14px;">' +
@@ -619,18 +684,18 @@ async function cargarChatRespuesta() {
                 '</div></div>';
         }).join('');
 
-        chatRespuestaMsgs.scrollTop = chatRespuestaMsgs.scrollHeight;
+        chatActiveMsgs.scrollTop = chatActiveMsgs.scrollHeight;
     } catch (error) {
-        chatRespuestaMsgs.innerHTML = '<p style="text-align: center; color: #e74c3c; font-size: 13px;">Error al cargar mensajes</p>';
+        chatActiveMsgs.innerHTML = '<p style="text-align: center; color: #e74c3c; font-size: 13px;">Error al cargar mensajes</p>';
     }
 }
 
-async function enviarRespuesta() {
-    const texto = chatRespuestaInput.value.trim();
+async function enviarChatActivo() {
+    const texto = chatActiveInput.value.trim();
     if (!texto || !chatActualUserId || !chatActualPetId) return;
 
-    btnEnviarRespuesta.disabled = true;
-    btnEnviarRespuesta.textContent = 'Enviando...';
+    btnEnviarChatActivo.disabled = true;
+    btnEnviarChatActivo.textContent = 'Enviando...';
 
     try {
         const response = await fetch('/mensajes/' + chatActualPetId, {
@@ -640,22 +705,22 @@ async function enviarRespuesta() {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({ message: texto }),
+            body: JSON.stringify({ message: texto, to_user_id: chatActualUserId }),
         });
 
         const data = await response.json();
 
         if (data.success) {
-            chatRespuestaInput.value = '';
-            cargarChatRespuesta();
+            chatActiveInput.value = '';
+            cargarChatActivo();
         } else {
             alert('Error: ' + data.message);
         }
     } catch (error) {
         alert('Error al enviar mensaje');
     } finally {
-        btnEnviarRespuesta.disabled = false;
-        btnEnviarRespuesta.textContent = 'Enviar';
+        btnEnviarChatActivo.disabled = false;
+        btnEnviarChatActivo.textContent = 'Enviar';
     }
 }
 
@@ -702,24 +767,278 @@ if (btnMensajes && modalMensajes) {
     });
 }
 
-if (closeChatRespuesta) {
-    closeChatRespuesta.onclick = function() {
-        modalChatRespuesta.style.display = 'none';
+if (chatBackBtn) {
+    chatBackBtn.addEventListener('click', function() {
+        chatActive.style.display = 'none';
+        chatPlaceholder.style.display = 'flex';
+        chatSidebar.classList.remove('hidden');
+        document.querySelectorAll('.conversacion-card').forEach(c => c.classList.remove('active'));
+    });
+}
+
+if (btnEnviarChatActivo && chatActiveInput) {
+    btnEnviarChatActivo.addEventListener('click', enviarChatActivo);
+    chatActiveInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') enviarChatActivo();
+    });
+}
+
+// --- EMERGENCIAS ---
+
+const btnEmergencia = document.getElementById('btn-emergencia');
+const modalEmergencia = document.getElementById('modal-emergencia');
+const closeEmergencia = document.getElementById('close-emergencia');
+const formEmergencia = document.getElementById('form-emergencia');
+const btnGps = document.getElementById('btn-gps');
+const emergenciaLocation = document.getElementById('emergencia-location');
+const emergenciaLat = document.getElementById('emergencia-lat');
+const emergenciaLng = document.getElementById('emergencia-lng');
+const emergenciaCoords = document.getElementById('emergencia-coords');
+
+if (btnEmergencia && modalEmergencia) {
+    btnEmergencia.addEventListener('click', function() {
+        document.getElementById('modal-reportar').style.display = 'none';
+        modalEmergencia.style.display = 'block';
+    });
+}
+
+if (closeEmergencia && modalEmergencia) {
+    closeEmergencia.onclick = function() {
+        modalEmergencia.style.display = 'none';
+        volverAlInicio();
+    };
+    window.addEventListener('click', function(event) {
+        if (event.target == modalEmergencia) {
+            modalEmergencia.style.display = 'none';
+            volverAlInicio();
+        }
+    });
+}
+
+if (btnGps) {
+    btnGps.addEventListener('click', function() {
+        if (!navigator.geolocation) {
+            alert('Tu navegador no soporta la ubicación. Escribe la dirección manualmente.');
+            return;
+        }
+        btnGps.textContent = '📍 Obteniendo ubicación...';
+        btnGps.disabled = true;
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                emergenciaLat.value = pos.coords.latitude;
+                emergenciaLng.value = pos.coords.longitude;
+                emergenciaCoords.textContent = '📍 Coordenadas: ' + pos.coords.latitude + ', ' + pos.coords.longitude;
+                btnGps.textContent = '✅ Ubicación obtenida';
+                btnGps.style.background = '#27ae60';
+            },
+            function() {
+                alert('No se pudo obtener la ubicación. Escribe la dirección manualmente.');
+                btnGps.textContent = '📍 Usar mi ubicación';
+                btnGps.disabled = false;
+            }
+        );
+    });
+}
+
+if (formEmergencia) {
+    formEmergencia.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = this.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/emergencias', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                modalEmergencia.style.display = 'none';
+                this.reset();
+                emergenciaCoords.textContent = '';
+                btnGps.textContent = '📍 Usar mi ubicación';
+                btnGps.disabled = false;
+                btnGps.style.background = '';
+                alert('✅ ' + result.message);
+                volverAlInicio();
+            } else {
+                alert('Error: ' + (result.message || 'No se pudo reportar'));
+            }
+        } catch (error) {
+            alert('Error al conectar con el servidor');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🚨 Reportar emergencia';
+        }
+    });
+}
+
+// Emergencias activas para rescatistas
+const btnEmergenciasActivas = document.getElementById('btn-emergencias-activas');
+const modalEmergenciasActivas = document.getElementById('modal-emergencias-activas');
+const closeEmergenciasActivas = document.getElementById('close-emergencias-activas');
+
+async function cargarEmergenciasActivas() {
+    const container = document.getElementById('lista-emergencias');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/emergencias/activas', {
+            headers: { 'Accept': 'application/json' },
+        });
+        const data = await response.json();
+
+        if (!data.emergencies || data.emergencies.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">No hay emergencias activas. 🐾</p>';
+            return;
+        }
+
+        container.innerHTML = data.emergencies.map(emerg => `
+            <div class="solicitud-card" style="border-left-color: #e74c3c;">
+                <div class="solicitud-header">
+                    <span class="solicitud-pet-name">🚨 Emergencia</span>
+                    <span class="solicitud-status" style="background: #e74c3c; color: white;">${emerg.status === 'pendiente' ? 'Pendiente' : 'En curso'}</span>
+                </div>
+                <div class="solicitud-info"><strong>Reportó:</strong> ${emerg.user.name}</div>
+                <div class="solicitud-message" style="background: var(--bg-white);">"${emerg.description}"</div>
+                ${emerg.location ? '<div class="solicitud-info">📍 ' + emerg.location + '</div>' : ''}
+                ${emerg.assignments && emerg.assignments.length > 0 ? `
+                    <div style="margin-top: 8px; padding: 8px; background: #e8f5e9; border-radius: var(--radius-sm);">
+                        <strong style="font-size: 13px;">🦸 Rescatistas:</strong>
+                        ${emerg.assignments.map(a => '<div style="font-size: 13px; color: var(--text-dark);">✅ ' + a.user.name + ': ' + (a.message || 'En camino') + '</div>').join('')}
+                    </div>
+                ` : ''}
+                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                    ${emerg.status !== 'resuelto' ? `
+                        <button class="btn-asignar" data-id="${emerg.id}" style="flex: 1; padding: 8px; background: var(--secondary-green-light); color: var(--secondary-green-dark); border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 13px;">🦸 Voy en camino</button>
+                        <button class="btn-resolver" data-id="${emerg.id}" style="flex: 1; padding: 8px; background: #fde8e8; color: #e74c3c; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 13px;">✅ Resuelto</button>
+                    ` : ''}
+                </div>
+                ${emerg.status === 'pendiente' ? `
+                    <div style="margin-top: 8px;">
+                        <input type="text" class="emergencia-mensaje" data-id="${emerg.id}" placeholder="Ej: Ya voy para allá..." style="width: 100%; padding: 8px; border: 2px solid var(--bg-light); border-radius: var(--radius-sm); font-size: 13px; box-sizing: border-box;">
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.btn-asignar').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const msgInput = container.querySelector('.emergencia-mensaje[data-id="' + id + '"]');
+                const message = msgInput ? msgInput.value : '';
+                const msg = prompt('Escribe un mensaje (opcional):', message || '¡Ya voy en camino!');
+                if (msg !== null) {
+                    asignarEmergencia(id, msg);
+                }
+            });
+        });
+
+        container.querySelectorAll('.btn-resolver').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que esta emergencia está resuelta?')) {
+                    resolverEmergencia(this.dataset.id);
+                }
+            });
+        });
+
+        const badge = document.getElementById('emergencia-badge');
+        if (badge) {
+            const pendientes = data.emergencies.filter(e => e.status === 'pendiente').length;
+            if (pendientes > 0) {
+                badge.textContent = pendientes;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading emergencies:', error);
     }
 }
 
-window.addEventListener('click', function(event) {
-    if (event.target == modalChatRespuesta) {
-        modalChatRespuesta.style.display = 'none';
-    }
-});
+async function asignarEmergencia(id, message) {
+    try {
+        const response = await fetch('/emergencias/' + id + '/asignar', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ message: message }),
+        });
 
-if (btnEnviarRespuesta && chatRespuestaInput) {
-    btnEnviarRespuesta.addEventListener('click', enviarRespuesta);
-    chatRespuestaInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') enviarRespuesta();
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ ' + data.message);
+            cargarEmergenciasActivas();
+        } else {
+            alert('Error: ' + (data.message || 'No se pudo asignar'));
+        }
+    } catch (error) {
+        alert('Error al conectar con el servidor');
+    }
+}
+
+async function resolverEmergencia(id) {
+    try {
+        const response = await fetch('/emergencias/' + id + '/resolver', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ ' + data.message);
+            cargarEmergenciasActivas();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (error) {
+        alert('Error al conectar con el servidor');
+    }
+}
+
+if (btnEmergenciasActivas && modalEmergenciasActivas) {
+    btnEmergenciasActivas.addEventListener('click', function(e) {
+        e.preventDefault();
+        cargarEmergenciasActivas();
+        modalEmergenciasActivas.style.display = 'block';
+    });
+
+    if (closeEmergenciasActivas) {
+        closeEmergenciasActivas.onclick = function() {
+            modalEmergenciasActivas.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('click', function(event) {
+        if (event.target == modalEmergenciasActivas) {
+            modalEmergenciasActivas.style.display = 'none';
+        }
     });
 }
 
 setInterval(revisarMensajesNoLeidos, 10000);
 revisarMensajesNoLeidos();
+
+if (document.getElementById('btn-emergencias-activas')) {
+    setInterval(cargarEmergenciasActivas, 15000);
+}

@@ -41,6 +41,57 @@
                 <p style="margin-bottom: 0;"><strong>Teléfono:</strong> {{ $user->phone ?? 'No registrado' }}</p>
             </div>
 
+                @if($user->role === 'refugio' || $user->role === 'veterinaria')
+                    <p style="margin-bottom: 0;"><strong>Dirección:</strong> {{ $user->direccion ?? 'No registrada' }}</p>
+                @endif
+            </div>
+
+            <div class="card" style="padding: 20px; margin-top: 12px; background: var(--bg-light);">
+                <p style="margin-bottom: 4px;">
+                    <strong>Tipo de cuenta:</strong>
+                    @if($user->role === 'normal') 😊 Normal
+                    @elseif($user->role === 'rescatista') 🦸 Rescatista
+                    @elseif($user->role === 'refugio') 🏠 Refugio
+                    @elseif($user->role === 'veterinaria') 💉 Veterinaria
+                    @endif
+                </p>
+                @if($user->role === 'rescatista' && $user->refugio)
+                    <p style="margin-bottom: 0; font-size: 14px; color: var(--text-medium);">🏠 Vinculado a: <strong>{{ $user->refugio }}</strong></p>
+                @endif
+            </div>
+
+            @if($user->role === 'normal')
+                <form action="{{ route('volverse.rescatista') }}" method="POST" style="margin-top: 12px;">
+                    @csrf
+                    <button type="submit" class="btn-submit" style="padding: 12px; background: linear-gradient(135deg, #6ba587, #8bc9a8);">
+                        🦸 Quiero ser rescatista
+                    </button>
+                </form>
+            @endif
+
+            @if($user->role === 'rescatista')
+                <form id="form-actualizar-refugio" method="POST" action="{{ route('perfil.actualizar') }}" style="margin-top: 12px;">
+                    @csrf
+                    <div style="display: flex; gap: 8px; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; font-weight: 600; color: var(--text-medium); display: block; margin-bottom: 4px;">¿Estás vinculado a un refugio?</label>
+                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                <label style="font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                    <input type="radio" name="tiene_refugio" value="si" {{ $user->refugio ? 'checked' : '' }} onchange="document.getElementById('campo-refugio').style.display='block'"> Sí
+                                </label>
+                                <label style="font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                    <input type="radio" name="tiene_refugio" value="no" {{ !$user->refugio ? 'checked' : '' }} onchange="document.getElementById('campo-refugio').style.display='none'"> No
+                                </label>
+                            </div>
+                            <div id="campo-refugio" style="{{ $user->refugio ? '' : 'display: none;' }}">
+                                <input type="text" name="refugio" class="form-input" placeholder="Nombre del refugio" value="{{ $user->refugio ?? '' }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" style="width: auto; padding: 10px 20px; margin-top: 22px;">Guardar</button>
+                    </div>
+                </form>
+            @endif
+
             <button id="btn-editar-perfil" class="btn-submit" style="margin-top: 12px; padding: 12px;">
                 ✏️ Editar perfil
             </button>
@@ -220,6 +271,14 @@
                         <input type="checkbox" name="castrado" id="edit-pet-castrado" value="1">
                         <span>✂️ Castrado</span>
                     </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="sociable" id="edit-pet-sociable" value="1">
+                        <span>😊 Sociable</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="entrenado" id="edit-pet-entrenado" value="1">
+                        <span>🎓 Entrenado</span>
+                    </label>
                 </div>
 
                 <div class="form-group">
@@ -291,6 +350,8 @@
                 document.getElementById('edit-pet-phone').value = pet.phone || '';
                 document.getElementById('edit-pet-vacunado').checked = !!pet.vacunado;
                 document.getElementById('edit-pet-castrado').checked = !!pet.castrado;
+                document.getElementById('edit-pet-sociable').checked = !!pet.sociable;
+                document.getElementById('edit-pet-entrenado').checked = !!pet.entrenado;
                 document.getElementById('edit-pet-description').value = pet.description || '';
 
                 modal.style.display = 'block';

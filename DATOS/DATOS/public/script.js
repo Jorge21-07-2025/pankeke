@@ -22,13 +22,9 @@ function togglePassword(icono) {
         if (input.type === "password") {
             input.type = "text";
             icono.classList.replace('fa-eye', 'fa-eye-slash');
-            console.log("Contraseña visible");
         } else {
             input.type = "password";
             icono.classList.replace('fa-eye-slash', 'fa-eye');
-            console.log("Contraseña oculta");
         }
-    } else {
-        console.log("No se encontró el input");
     }
 }

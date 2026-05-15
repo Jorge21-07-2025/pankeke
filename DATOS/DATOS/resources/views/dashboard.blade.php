@@ -27,6 +27,12 @@
                         <span class="notif-badge" id="notif-badge">{{ $solicitudesCount }}</span>
                     @endif
                 </button>
+                @if(Auth::user()->role === 'rescatista')
+                    <button id="btn-emergencias-activas" style="background: none; border: none; cursor: pointer; position: relative; font-size: 24px;">
+                        🚨
+                        <span class="notif-badge" id="emergencia-badge" style="display: none;">0</span>
+                    </button>
+                @endif
                 <div class="profile-avatar">
                     <span class="avatar-emoji">😊</span>
                 </div>
@@ -120,7 +126,7 @@
             <span class="nav-icon">📢</span>
             <span class="nav-label">Reportar</span>
         </button>
-        <button class="nav-item" id="btn-guardados" onclick="irA('guardados')">
+        <button class="nav-item" id="btn-guardados" onclick="window.location.href='/guardados'">
             <span class="nav-icon">❤️</span>
             <span class="nav-label">Guardados</span>
         </button>
@@ -155,32 +161,78 @@
             <p>Tu reporte puede salvar una vida.</p>
             <div class="report-options">
                 <button class="report-btn lost">🔍 Perdí una mascota</button>
-                <button class="report-btn emergency">🚨 Emergencia</button>
+                <button class="report-btn emergency" id="btn-emergencia">🚨 Emergencia</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-emergencia" class="modal" style="display: none;">
+        <div class="modal-content modal-publicar-content" style="max-width: 480px;">
+            <span class="close-button" id="close-emergencia">&times;</span>
+            <h2 style="color: #e74c3c;">🚨 Reportar emergencia</h2>
+            <p style="color: var(--text-medium); font-size: 14px; margin-bottom: 16px;">Describe la situación y la ubicación para que los rescatistas puedan ayudar</p>
+            <form id="form-emergencia">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">¿Qué está pasando?</label>
+                    <textarea name="description" class="form-input form-textarea" required placeholder="Describe la emergencia..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ubicación</label>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <button type="button" id="btn-gps" class="btn" style="background: var(--secondary-green); color: white; padding: 10px 16px; font-size: 13px; border: none; border-radius: var(--radius-sm); cursor: pointer;">📍 Usar mi ubicación</button>
+                    </div>
+                    <input type="text" name="location" id="emergencia-location" class="form-input" placeholder="Escribe la dirección (o usa el botón de arriba)">
+                    <input type="hidden" name="latitude" id="emergencia-lat">
+                    <input type="hidden" name="longitude" id="emergencia-lng">
+                    <p id="emergencia-coords" style="font-size: 12px; color: var(--text-light); margin-top: 4px;"></p>
+                </div>
+                <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">🚨 Reportar emergencia</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-emergencias-activas" class="modal" style="display: none;">
+        <div class="modal-content modal-notif-content">
+            <span class="close-button" id="close-emergencias-activas">&times;</span>
+            <h2 style="color: #e74c3c;">🚨 Emergencias activas</h2>
+            <hr>
+            <div id="lista-emergencias">
+                <p style="text-align: center; color: #888; padding: 20px;">Cargando emergencias activas...</p>
             </div>
         </div>
     </div>
 
     <div id="modal-mensajes" class="modal">
-        <div class="modal-content modal-notif-content">
+        <div class="modal-content modal-chat-content">
             <span class="close-button" id="close-mensajes">&times;</span>
             <h2 style="color: #634832;">💬 Mensajes</h2>
             <hr>
-            <div id="lista-conversaciones">
-                <p style="text-align: center; color: #888; padding: 20px;">Cargando conversaciones...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-chat-respuesta" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 450px;">
-            <span class="close-button" id="close-chat-respuesta">&times;</span>
-            <h2 id="chat-respuesta-titulo" style="color: #634832;">💬 Chat</h2>
-            <div id="chat-respuesta-msgs" style="background: var(--bg-light); border-radius: var(--radius-md); padding: 12px; height: 300px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
-                <p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Cargando mensajes...</p>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="chat-respuesta-input" class="form-input" placeholder="Escribe tu respuesta..." style="flex: 1;">
-                <button id="btn-enviar-respuesta" class="btn-submit" style="width: auto; padding: 10px 20px; margin: 0;">Enviar</button>
+            <div class="chat-layout">
+                <div class="chat-sidebar" id="chat-sidebar">
+                    <div id="lista-conversaciones">
+                        <p style="text-align: center; color: #888; padding: 20px;">Cargando conversaciones...</p>
+                    </div>
+                </div>
+                <div class="chat-divider"></div>
+                <div class="chat-main" id="chat-main">
+                    <div class="chat-placeholder" id="chat-placeholder">
+                        <p style="color: var(--text-light); font-size: 14px; margin: auto;">Selecciona una conversación</p>
+                    </div>
+                    <div class="chat-active" id="chat-active" style="display: none;">
+                        <div class="chat-active-header">
+                            <button class="chat-back-btn" id="chat-back-btn">←</button>
+                            <span class="chat-active-title" id="chat-active-title"></span>
+                        </div>
+                        <div class="chat-active-msgs" id="chat-active-msgs">
+                            <p style="text-align: center; color: var(--text-light); font-size: 13px; margin: auto;">Cargando mensajes...</p>
+                        </div>
+                        <div class="chat-active-input-area">
+                            <input type="text" id="chat-active-input" class="form-input" placeholder="Escribe tu mensaje...">
+                            <button id="btn-enviar-chat-activo" class="btn-submit" style="width: auto; padding: 10px 20px; margin: 0;">Enviar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -285,6 +337,14 @@
                     <label class="checkbox-label">
                         <input type="checkbox" name="castrado" value="1">
                         <span>✂️ Castrado</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="sociable" value="1">
+                        <span>😊 Sociable</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="entrenado" value="1">
+                        <span>🎓 Entrenado</span>
                     </label>
                 </div>
 

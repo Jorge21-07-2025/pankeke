@@ -79,6 +79,39 @@
                         <i class="fa-solid fa-eye toggle-pass" onclick="togglePassword(this)"></i>
                     </div>
 
+                    <div style="margin-bottom: 16px; text-align: left;">
+                        <label style="font-size: 13px; font-weight: 600; color: var(--text-dark); display: block; margin-bottom: 8px;">Tipo de cuenta</label>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <label style="flex: 1; min-width: 80px; padding: 8px; border: 2px solid var(--bg-light); border-radius: var(--radius-sm); text-align: center; cursor: pointer; font-size: 13px; transition: all 0.2s;" class="role-option" onclick="seleccionarRol(this, 'normal')">
+                                <input type="radio" name="role" value="normal" checked hidden>
+                                😊 Normal
+                            </label>
+                            <label style="flex: 1; min-width: 80px; padding: 8px; border: 2px solid var(--bg-light); border-radius: var(--radius-sm); text-align: center; cursor: pointer; font-size: 13px; transition: all 0.2s;" class="role-option" onclick="seleccionarRol(this, 'rescatista')">
+                                <input type="radio" name="role" value="rescatista" hidden>
+                                🦸 Rescatista
+                            </label>
+                            <label style="flex: 1; min-width: 80px; padding: 8px; border: 2px solid var(--bg-light); border-radius: var(--radius-sm); text-align: center; cursor: pointer; font-size: 13px; transition: all 0.2s;" class="role-option" onclick="seleccionarRol(this, 'refugio')">
+                                <input type="radio" name="role" value="refugio" hidden>
+                                🏠 Refugio
+                            </label>
+                            <label style="flex: 1; min-width: 80px; padding: 8px; border: 2px solid var(--bg-light); border-radius: var(--radius-sm); text-align: center; cursor: pointer; font-size: 13px; transition: all 0.2s;" class="role-option" onclick="seleccionarRol(this, 'veterinaria')">
+                                <input type="radio" name="role" value="veterinaria" hidden>
+                                💉 Veterinaria
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="role-extras" style="display: none; margin-bottom: 16px; text-align: left;">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del lugar</label>
+                            <input type="text" name="nombre_lugar" class="form-input" placeholder="Ej: Refugio La Perla">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" name="direccion" class="form-input" placeholder="Ej: Cra 50 # 45-20, Medellín">
+                        </div>
+                    </div>
+
                     <button type="submit">REGISTRARME</button>
                 </form>
             </div>
@@ -138,6 +171,23 @@
         </div>
     </main>
 
+    <script>
+        function seleccionarRol(elemento, rol) {
+            document.querySelectorAll('.role-option').forEach(el => {
+                el.style.borderColor = 'var(--bg-light)';
+                el.style.background = 'transparent';
+            });
+            elemento.style.borderColor = '#e8744f';
+            elemento.style.background = 'rgba(232, 116, 79, 0.08)';
+
+            const extras = document.getElementById('role-extras');
+            if (rol === 'refugio' || rol === 'veterinaria') {
+                extras.style.display = 'block';
+            } else {
+                extras.style.display = 'none';
+            }
+        }
+    </script>
     <script src="{{ asset('script.js') }}"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ use App\Models\Pet;
 use App\Models\AdoptionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AdoptionRequestController extends Controller
 {
@@ -62,7 +63,7 @@ class AdoptionRequestController extends Controller
                 );
             }
         } catch (\Exception $e) {
-            // Email es opcional, no bloqueamos si falla
+            Log::error('Error al enviar correo de solicitud de adopción: ' . $e->getMessage());
         }
 
         $ownerPhone = $pet->phone;

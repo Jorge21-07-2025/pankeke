@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.add('active');
       
       const labels = ['Inicio', 'Explorar', 'Reportar', 'Guardados', 'Perfil'];
-      console.log(`Navegando a: ${labels[index]}`);
     });
   });
 });

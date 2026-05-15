@@ -30,6 +30,8 @@ class Pet extends Model
         'user_id',
         'vacunado',
         'castrado',
+        'sociable',
+        'entrenado',
         'phone',
     ];
 
@@ -38,6 +40,8 @@ class Pet extends Model
         return [
             'vacunado' => 'boolean',
             'castrado' => 'boolean',
+            'sociable' => 'boolean',
+            'entrenado' => 'boolean',
         ];
     }
 

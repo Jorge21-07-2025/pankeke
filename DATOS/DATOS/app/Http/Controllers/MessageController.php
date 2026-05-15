@@ -10,17 +10,20 @@ class MessageController extends Controller
 {
     public function send(Request $request, Pet $pet)
     {
-        if ($pet->user_id === auth()->id()) {
+        $validated = $request->validate([
+            'message' => 'required|string|max:2000',
+            'to_user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $toUserId = $validated['to_user_id'] ?? $pet->user_id;
+
+        if (auth()->id() === $toUserId) {
             return response()->json(['success' => false, 'message' => 'No puedes enviarte mensajes a ti mismo'], 422);
         }
 
-        $validated = $request->validate([
-            'message' => 'required|string|max:2000',
-        ]);
-
         $message = Message::create([
             'from_user_id' => auth()->id(),
-            'to_user_id' => $pet->user_id,
+            'to_user_id' => $toUserId,
             'pet_id' => $pet->id,
             'message' => $validated['message'],
         ]);
